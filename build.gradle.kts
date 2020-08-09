@@ -22,7 +22,7 @@ dependencies {
         this.compileOnly(dependency)
         this.testCompileOnly(dependency)
     }
-    
+
     // annotations
     depend("org.jetbrains:annotations:19.0.0")
     // kotlin libraries
@@ -47,16 +47,29 @@ dependencies {
 }
 
 tasks {
-    compileKotlin {
-        kotlinOptions.jvmTarget = "1.8"
-    }
-    compileTestKotlin {
-        kotlinOptions.jvmTarget = "1.8"
-    }
+
+    compileKotlin { kotlinOptions.jvmTarget = "1.8" }
+    compileTestKotlin { kotlinOptions.jvmTarget = "1.8" }
 
     jar {
         archiveFileName.set("$artifact-${project.version}.jar")
+
+        from(project.projectDir) {
+            include("LICENSE.txt")
+            into("META-INF")
+        }
+
+        manifest {
+            attributes(
+                mapOf(
+                    "Author" to "Alviann",
+                    "Organization" to "Lucky Network",
+                    "Team" to "Lucky Development Department"
+                )
+            )
+        }
     }
+
 }
 
 java {
