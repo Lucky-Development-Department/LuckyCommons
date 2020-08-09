@@ -1,9 +1,41 @@
+import com.jfrog.bintray.gradle.BintrayExtension.PackageConfig
+import com.jfrog.bintray.gradle.BintrayExtension.VersionConfig
+import java.util.*
+import java.io.*
+
 plugins {
     kotlin("jvm") version "1.3.72"
     id("com.github.johnrengelman.shadow") version "6.0.0"
+    id("org.jetbrains.dokka") version "0.10.1"
+    `maven-publish`
+    java
+    id("com.jfrog.bintray") version "1.8.5"
 }
 
 val artifactName = "LuckyCommons"
+val publicationName = "bintray"
+val projectDescription = "The commonly used codes in Lucky Network projects"
+
+/** provided the bintray deploy config/credentials */
+val deployConfig = Properties()
+    get() {
+        if (field.isEmpty) {
+            val file = File("$projectDir/deploy.properties")
+            if (!file.exists())
+                throw FileNotFoundException("Cannot find ${file.name}!")
+
+            try {
+                file.bufferedReader().use {
+                    field.load(it)
+                }
+            } catch (e: Exception) {
+                throw IOException("Cannot load ${file.name}!")
+            }
+        }
+
+        return field
+    }
+
 group = "dev.luckynetwork.alviann.commons"
 version = "1.0.0"
 
@@ -46,6 +78,14 @@ dependencies {
     depend("com.github.Alviannn:SQLHelper:2.5.6")
 }
 
+/** creates the docs jar */
+val dokkaJar by tasks.creating(Jar::class) {
+    group = JavaBasePlugin.DOCUMENTATION_GROUP
+    description = "Assembles Kotlin docs with Dokka"
+    archiveClassifier.set("javadoc")
+    from(tasks.dokka)
+}
+
 tasks {
 
     compileKotlin { kotlinOptions.jvmTarget = "1.8" }
@@ -70,11 +110,59 @@ tasks {
         }
     }
 
-    kotlinSourcesJar {  }
+    kotlinSourcesJar { }
+
+    dokkaJar.run {  }
 
 }
 
 java {
     sourceCompatibility = JavaVersion.VERSION_1_8
     targetCompatibility = JavaVersion.VERSION_1_8
+}
+
+bintray {
+    user = deployConfig.getProperty("bintray.username")
+    key = deployConfig.getProperty("bintray.api-key")
+
+    override = true
+    publish = true
+    setPublications(publicationName)
+
+    pkg(delegateClosureOf<PackageConfig> {
+        repo = "maven"
+
+        name = "LuckyCommons"
+        setLicenses("AGPL-V3")
+
+        vcsUrl = "https://github.com/Lucky-Development-Department/LuckyCommons.git"
+        websiteUrl = "https://github.com/Lucky-Development-Department/"
+        githubRepo = "Lucky-Development-Department/LuckyCommons"
+
+        setLabels("library", "commons", "lucky network", "public")
+        desc = projectDescription
+
+        publicDownloadNumbers = true
+
+        version(delegateClosureOf<VersionConfig> {
+            name = "v${project.version}"
+            desc = ""
+            released = Date().toString()
+            vcsTag = project.version.toString()
+        })
+    })
+}
+
+@Suppress("DEPRECATION")
+publishing {
+    publications {
+        create<MavenPublication>(publicationName) {
+            from(components["java"])
+
+            artifactId = artifactName
+
+            artifact(tasks.kotlinSourcesJar.get())
+            artifact(dokkaJar)
+        }
+    }
 }

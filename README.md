@@ -9,17 +9,18 @@ The library needs to be compiled within the project.
 ```xml
 <repositories>
     <repository>
-        <id>jitpack.io</id>
-        <url>https://jitpack.io</url>
+        <id>jcenter</id>
+        <name>jcenter-bintray</name>
+        <url>https://jcenter.bintray.com</url>
     </repository>
 </repositories>
 
 <dependencies>
     <dependency>
-        <groupId>com.github.Lucky-Development-Department</groupId>
+        <groupId>dev.luckynetwork.alviann.commons</groupId>
         <artifactId>LuckyCommons</artifactId>
         <version>1.0.0</version>
-        <scope>compile</scope>
+        <type>compile</type>
     </dependency>
 </dependencies>
 ```
@@ -27,22 +28,22 @@ The library needs to be compiled within the project.
 #### Gradle (Groovy)
 ```groovy
 repositories {
-    maven { url = 'https://jitpack.io' }
+    jcenter()
 }
 
 dependencies {
-    implementation 'com.github.Lucky-Development-Department:LuckyCommons:1.0.0' 
+    implementation 'dev.luckynetwork.alviann.commons:LuckyCommons:1.0.0' 
 }
 ```
 
 #### Gradle (Kotlin)
 ```kotlin
 repositories {
-    maven("https://jitpack.io")
+    jcenter()
 }
 
 dependencies {
-    implementation("com.github.Lucky-Development-Department:LuckyCommons:1.0.0")
+    implementation("dev.luckynetwork.alviann.commons:LuckyCommons:1.0.0")
 }
 ```
 
