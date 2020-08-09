@@ -3,7 +3,7 @@ plugins {
     id("com.github.johnrengelman.shadow") version "6.0.0"
 }
 
-val artifact = "LuckyCommons"
+val artifactName = "LuckyCommons"
 group = "dev.luckynetwork.alviann.commons"
 version = "1.0.0"
 
@@ -26,9 +26,9 @@ dependencies {
     // annotations
     depend("org.jetbrains:annotations:19.0.0")
     // kotlin libraries
-    depend("org.jetbrains.kotlin:kotlin-stdlib")
-    depend("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-    depend("org.jetbrains.kotlin:kotlin-stdlib-common")
+    depend("org.jetbrains.kotlin:kotlin-stdlib:1.3.72")
+    depend("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.3.72")
+    depend("org.jetbrains.kotlin:kotlin-stdlib-common:1.3.72")
     depend("org.jetbrains.kotlin:kotlin-reflect:1.3.72")
 
     // kotlin coroutines
@@ -52,7 +52,7 @@ tasks {
     compileTestKotlin { kotlinOptions.jvmTarget = "1.8" }
 
     jar {
-        archiveFileName.set("$artifact-${project.version}.jar")
+        archiveFileName.set("$artifactName-${project.version}.jar")
 
         from(project.projectDir) {
             include("LICENSE.txt")
@@ -69,6 +69,8 @@ tasks {
             )
         }
     }
+
+    kotlinSourcesJar {  }
 
 }
 
