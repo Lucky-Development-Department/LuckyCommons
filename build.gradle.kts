@@ -1,7 +1,8 @@
 import com.jfrog.bintray.gradle.BintrayExtension.PackageConfig
 import com.jfrog.bintray.gradle.BintrayExtension.VersionConfig
+import java.io.FileNotFoundException
+import java.io.IOException
 import java.util.*
-import java.io.*
 
 plugins {
     kotlin("jvm") version "1.3.72"
@@ -70,7 +71,7 @@ dependencies {
     depend("org.jetbrains.kotlinx:kotlinx-coroutines-core-common:1.3.8")
 
     // the spigot api
-    depend("org.spigotmc:spigot-api:1.8.8-R0.1-SNAPSHOT")
+    //depend("org.spigotmc:spigot-api:1.8.8-R0.1-SNAPSHOT")
     depend("org.spigotmc:spigot-api:1.12.2-R0.1-SNAPSHOT")
     // the bungeecord api
     depend("net.md-5:bungeecord-api:1.16-R0.3")
@@ -118,7 +119,7 @@ tasks {
 
     kotlinSourcesJar { }
 
-    dokkaJar.run {  }
+    dokkaJar.run { }
 
 }
 
@@ -164,6 +165,19 @@ publishing {
     publications {
         create<MavenPublication>(publicationName) {
             from(components["java"])
+
+            pom.withXml {
+                val parent = this.asNode().appendNode("dependencies")
+
+                configurations.compileOnly.allDependencies.forEach {
+                    val node = parent.appendNode("dependency")
+
+                    node.appendNode("groupId", it.group)
+                    node.appendNode("artifactId", it.name)
+                    node.appendNode("version", it.version)
+                    node.appendNode("scope", "provided")
+                }
+            }
 
             artifactId = artifactName
 
