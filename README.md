@@ -1,3 +1,4 @@
+[ ![Download](https://api.bintray.com/packages/alviannn/maven/LuckyCommons/images/download.svg) ](https://bintray.com/alviannn/maven/LuckyCommons/_latestVersion)
 # Lucky Commons
 
 The codes that are commonly used within the Lucky Network project.
