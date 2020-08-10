@@ -10,9 +10,8 @@ The library needs to be compiled within the project.
 ```xml
 <repositories>
     <repository>
-        <id>jcenter</id>
-        <name>jcenter-bintray</name>
-        <url>https://jcenter.bintray.com</url>
+        <id>alviannn-bintray</id>
+        <url>https://dl.bintray.com/alviannn/maven</url>
     </repository>
 </repositories>
 
@@ -20,7 +19,7 @@ The library needs to be compiled within the project.
     <dependency>
         <groupId>dev.luckynetwork.alviann.commons</groupId>
         <artifactId>LuckyCommons</artifactId>
-        <version>1.0.0</version>
+        <version>1.0.1</version>
         <type>compile</type>
     </dependency>
 </dependencies>
@@ -29,22 +28,24 @@ The library needs to be compiled within the project.
 #### Gradle (Groovy)
 ```groovy
 repositories {
-    jcenter()
+    maven {
+        url = 'https://dl.bintray.com/alviannn/maven'
+    }
 }
 
 dependencies {
-    implementation 'dev.luckynetwork.alviann.commons:LuckyCommons:1.0.0' 
+    implementation 'dev.luckynetwork.alviann.commons:LuckyCommons:1.0.1' 
 }
 ```
 
 #### Gradle (Kotlin)
 ```kotlin
 repositories {
-    jcenter()
+    maven("https://dl.bintray.com/alviannn/maven")
 }
 
 dependencies {
-    implementation("dev.luckynetwork.alviann.commons:LuckyCommons:1.0.0")
+    implementation("dev.luckynetwork.alviann.commons:LuckyCommons:1.0.1")
 }
 ```
 
