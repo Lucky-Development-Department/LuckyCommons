@@ -8,6 +8,7 @@ import dev.luckynetwork.alviann.commons.closer.Closer
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async
 import net.md_5.bungee.api.ChatColor
+import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.CompletableFuture
@@ -49,14 +50,19 @@ fun String.colorize(): String =
 /** translates all string to minecraft chat color*/
 fun List<String>.colorize() = this.map { it.colorize() }
 
-/** determines if the string is an integer */
-fun String.isInt() = this.toIntOrNull() != null
-
 /** parses a string to a json */
 fun String.toJson(): JsonElement = JsonParser.parseString(this)
 
 /** creates a censored string */
 fun String.censor(): String = "*".repeat(this.length)
+
+/** determines if the string is an integer */
+val String.isInt
+    get() = this.toIntOrNull() != null
+
+/** determines if a string is a valid minecraft username */
+val String.isMinecraftUsername
+    get() = this.matches(Regex("^[a-zA-Z_0-9]{3,16}\$"))
 
 // ------------------------------------ //
 //           Global Collections         //
@@ -118,9 +124,20 @@ fun <T> safeRun(printError: Boolean = true, block: () -> T): T? {
     return null
 }
 
-/** creates a [Closer] closure */
-fun closer(block: (Closer) -> Unit) = Closer()
-    .use(block)
+/** creates a [Closer] block */
+fun closer(block: (Closer) -> Unit) = Closer().use(block)
+
+// ------------------------------------ //
+//                 File                 //
+// ------------------------------------ //
+
+/** gets a stream of a file from the jar */
+fun getResourceStream(clazz: Class<*>, name: String) =
+    clazz.classLoader.getResourceAsStream(name)?.buffered()
+
+/** gets the plugin jar file */
+fun getCurrentJarFile(clazz: Class<*>) =
+    safeRun(false) { File(clazz.protectionDomain.codeSource.location.toURI()) }
 
 // ------------------------------------ //
 //                 Thread               //

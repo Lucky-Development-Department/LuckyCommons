@@ -5,10 +5,12 @@ import java.io.*
 
 plugins {
     kotlin("jvm") version "1.3.72"
-    id("com.github.johnrengelman.shadow") version "6.0.0"
-    id("org.jetbrains.dokka") version "0.10.1"
+
     `maven-publish`
     java
+
+    id("com.github.johnrengelman.shadow") version "6.0.0"
+    id("org.jetbrains.dokka") version "0.10.1"
     id("com.jfrog.bintray") version "1.8.5"
 }
 
@@ -37,7 +39,7 @@ val deployConfig = Properties()
     }
 
 group = "dev.luckynetwork.alviann.commons"
-version = "1.0.0"
+version = "1.0.1"
 
 repositories {
     mavenLocal()
@@ -90,6 +92,10 @@ tasks {
 
     compileKotlin { kotlinOptions.jvmTarget = "1.8" }
     compileTestKotlin { kotlinOptions.jvmTarget = "1.8" }
+
+    compileJava {
+        options.encoding = "UTF-8"
+    }
 
     jar {
         archiveFileName.set("$artifactName-${project.version}.jar")
