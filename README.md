@@ -1,4 +1,5 @@
 [ ![Download](https://api.bintray.com/packages/alviannn/maven/LuckyCommons/images/download.svg) ](https://bintray.com/alviannn/maven/LuckyCommons/_latestVersion)
+
 # Lucky Commons
 
 The codes that are commonly used within the Lucky Network project.
@@ -19,7 +20,7 @@ The library needs to be compiled within the project.
     <dependency>
         <groupId>dev.luckynetwork.alviann.commons</groupId>
         <artifactId>LuckyCommons</artifactId>
-        <version>1.0.1</version>
+        <version>1.0.2</version>
         <type>compile</type>
     </dependency>
 </dependencies>
@@ -34,7 +35,7 @@ repositories {
 }
 
 dependencies {
-    implementation 'dev.luckynetwork.alviann.commons:LuckyCommons:1.0.1' 
+    implementation 'dev.luckynetwork.alviann.commons:LuckyCommons:1.0.2' 
 }
 ```
 
@@ -45,7 +46,7 @@ repositories {
 }
 
 dependencies {
-    implementation("dev.luckynetwork.alviann.commons:LuckyCommons:1.0.1")
+    implementation("dev.luckynetwork.alviann.commons:LuckyCommons:1.0.2")
 }
 ```
 
