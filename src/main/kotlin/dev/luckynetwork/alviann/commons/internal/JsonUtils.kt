@@ -3,11 +3,17 @@
 package dev.luckynetwork.alviann.commons.internal
 
 import com.google.gson.*
+import com.google.gson.stream.JsonReader
+import java.io.Reader
 
 val defaultGson: Gson = GsonBuilder().create()
 val prettyGson: Gson = GsonBuilder().setPrettyPrinting().create()
 
-/** @return a prettified JSON string */
+/** the default json parser (supports all versions) */
+@Suppress("DEPRECATION")
+val defaultParser = JsonParser()
+
+/** prettifies the json string */
 fun JsonElement.toPrettyString(): String = prettyGson.toJson(this)
 
 /**
@@ -27,7 +33,7 @@ fun JsonArray.asStringArray(): Array<String> {
  *
  * for example you have a json file like this
  * ```json
- *  {
+ * {
  *    "options": {
  *      "use-sql": true
  *    }
@@ -111,3 +117,15 @@ private fun chainJson(json: JsonObject, property: String, value: Any): JsonObjec
     }
     return json
 }
+
+/** parses a string into a [JsonElement] */
+@Suppress("DEPRECATION")
+fun parseToJson(string: String) = defaultParser.parse(string)!!
+
+/** parses a reader into a [JsonElement] */
+@Suppress("DEPRECATION")
+fun parseToJson(reader: Reader) = defaultParser.parse(reader)!!
+
+/** parses a json reader into a [JsonElement] */
+@Suppress("DEPRECATION")
+fun parseToJson(reader: JsonReader) = defaultParser.parse(reader)!!

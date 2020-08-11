@@ -2,14 +2,17 @@
 
 package dev.luckynetwork.alviann.commons.internal
 
+import dev.luckynetwork.alviann.commons.builder.ItemBuilder
 import dev.luckynetwork.alviann.commons.reflection.ReflectionUtils
 import org.bukkit.*
+import org.bukkit.attribute.Attribute
 import org.bukkit.command.CommandExecutor
 import org.bukkit.configuration.ConfigurationSection
 import org.bukkit.entity.Player
 import org.bukkit.event.Listener
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.inventory.InventoryType
+import org.bukkit.inventory.ItemStack
 import org.bukkit.plugin.Plugin
 import org.bukkit.plugin.java.JavaPlugin
 import kotlin.math.roundToInt
@@ -34,10 +37,13 @@ val Player.ping: Int
         return ping
     }
 
-/** respawns a player safely */
-fun Player.respawn(plugin: Plugin) {
+/** respawns the player safely */
+fun Player.safeRespawn(plugin: Plugin) {
     Bukkit.getScheduler().runTask(plugin) { this.spigot().respawn() }
 }
+
+/** respawns the player */
+fun Player.respawn() = this.spigot().respawn()
 
 /** plays a sound */
 fun Player.playSound(sound: Sound, volume: Float = 1.0F, pitch: Float = 1.0F) =
@@ -62,6 +68,37 @@ fun Player.sendMessage(vararg message: String) =
 /** gets all nearby players */
 fun Player.getNearbyPlayers(x: Double, y: Double, z: Double) =
     this.getNearbyEntities(x, y, z).filterIsInstance<Player>().toImmutable()
+
+/**
+ * clears the player's inventory
+ *
+ * @param clearArmor do you also want to clear the player armor?
+ */
+fun Player.clearInventory(clearArmor: Boolean = false) {
+    this.inventory.clear()
+    if (clearArmor)
+        this.inventory.armorContents = emptyArray()
+}
+
+/** clears the currently active potion effects */
+fun Player.clearPotionEffects() = this.activePotionEffects.clear()
+
+/**
+ * heals the player (restores the player's health)
+ *
+ * @param foodLevel do you also want to restores the player's food level?
+ */
+@Suppress("DEPRECATION")
+fun Player.heal(foodLevel: Boolean = false) {
+    try {
+        this.health = this.getAttribute(Attribute.GENERIC_MAX_HEALTH).value
+    } catch (_: Exception) {
+        this.health = this.maxHealth
+    }
+
+    if (foodLevel)
+        this.foodLevel = 20
+}
 
 // ------------------------------------ //
 //                Server                //
@@ -173,3 +210,10 @@ fun World.delete(saveChunks: Boolean = false) {
     safeRun { Bukkit.unloadWorld(this, saveChunks) }
     worldFolder.deleteRecursively()
 }
+
+// ------------------------------------ //
+//               ItemStack              //
+// ------------------------------------ //
+
+/** transforms the [ItemStack] into an [ItemBuilder] */
+fun ItemStack.toBuilder() = ItemBuilder(this)

@@ -5,7 +5,7 @@ import java.io.Flushable
 
 class Closer : AutoCloseable {
 
-    private val closeableList = arrayListOf<AutoCloseable?>()
+    private val closeableList = arrayListOf<AutoCloseable>()
 
     /**
      * adds a closable instance
@@ -24,19 +24,18 @@ class Closer : AutoCloseable {
      * closes all closable instances
      */
     override fun close() {
-        val iterator = closeableList.iterator()
+        safeRun(false) {
+            val iterator = closeableList.iterator()
 
-        while (iterator.hasNext()) {
-            val next = iterator.next()
+            while (iterator.hasNext()) {
+                val item = iterator.next()
 
-            if (next != null) {
-                if (next is Flushable)
-                    safeRun(false) { (next as Flushable).flush() }
+                if (item is Flushable)
+                    safeRun(false) { item.flush() }
 
-                safeRun { next.close() }
+                safeRun { item.close() }
+                iterator.remove()
             }
-
-            iterator.remove()
         }
 
         closeableList.clear()

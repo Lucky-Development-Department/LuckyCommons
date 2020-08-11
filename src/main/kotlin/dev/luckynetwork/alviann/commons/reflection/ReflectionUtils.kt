@@ -4,7 +4,6 @@ import dev.luckynetwork.alviann.commons.internal.toImmutable
 import org.bukkit.Bukkit
 import java.lang.reflect.Field
 
-
 @Suppress("UNCHECKED_CAST")
 object ReflectionUtils {
 

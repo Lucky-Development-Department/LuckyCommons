@@ -208,7 +208,9 @@ class ItemBuilder : Cloneable {
 
 }
 
-/** builds an item */
+/** builds an item
+ *
+ * this is only available for kotlin */
 @JvmSynthetic
 fun buildItem(
     item: ItemStack,
@@ -218,7 +220,9 @@ fun buildItem(
     return builder.build()
 }
 
-/** builds an item */
+/** builds an item
+ *
+ * this is only available for kotlin */
 @JvmSynthetic
 fun buildItem(
     builder: ItemBuilder,
@@ -228,7 +232,9 @@ fun buildItem(
     return newBuilder.build()
 }
 
-/** builds an item */
+/** builds an item
+ *
+ * this is only available for kotlin */
 @JvmSynthetic
 fun buildItem(
     material: Material,

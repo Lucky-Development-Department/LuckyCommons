@@ -2,13 +2,15 @@
 
 package dev.luckynetwork.alviann.commons.internal
 
-import com.google.gson.JsonElement
-import com.google.gson.JsonParser
 import dev.luckynetwork.alviann.commons.closer.Closer
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async
 import net.md_5.bungee.api.ChatColor
+import java.io.BufferedInputStream
 import java.io.File
+import java.nio.file.CopyOption
+import java.nio.file.Files
+import java.nio.file.Path
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.CompletableFuture
@@ -51,7 +53,7 @@ fun String.colorize(): String =
 fun List<String>.colorize() = this.map { it.colorize() }
 
 /** parses a string to a json */
-fun String.toJson(): JsonElement = JsonParser.parseString(this)
+fun String.toJson() = parseToJson(this)
 
 /** creates a censored string */
 fun String.censor(): String = "*".repeat(this.length)
@@ -131,21 +133,70 @@ fun closer(block: (Closer) -> Unit) = Closer().use(block)
 //                 File                 //
 // ------------------------------------ //
 
-/** gets a stream of a file from the jar */
-fun getResourceStream(clazz: Class<*>, name: String) =
-    clazz.classLoader.getResourceAsStream(name)?.buffered()
+/**
+ * gets a stream of a file from the jar
+ *
+ * @param clazz the class which will be transformed to a [ClassLoader] to get the stream
+ * @param name the file inside the .jar
+ */
+fun getResourceStream(clazz: Class<*>, name: String): BufferedInputStream? =
+    clazz.classLoader.getResourceStream(name)?.buffered()
+
+/**
+ * gets a stream of a file from the jar
+ *
+ * @param name the file inside the .jar
+ */
+fun Any.getResourceStream(name: String) = getResourceStream(this::class.java, name)
 
 /** gets the plugin jar file */
-fun getCurrentJarFile(clazz: Class<*>) =
-    safeRun(false) { File(clazz.protectionDomain.codeSource.location.toURI()) }
+val Class<*>.currentJarFile
+    get() = safeRun(false) { File(this.protectionDomain.codeSource.location.toURI()) }
+
+/**
+ * loads a file from the jar to a certain location
+ *
+ * @param clazz the class which has the correct [ClassLoader]
+ * @param source the file inside the .jar
+ * @param path the file destination
+ * @param options the options to load the file
+ *
+ * @throws NullPointerException if the file inside the jar cannot be found
+ * @see Files.copy
+ */
+fun loadFile(clazz: Class<*>, source: String, destination: Path, vararg options: CopyOption) {
+    closer {
+        val stream = it.add(getResourceStream(clazz, source))
+            ?: throw NullPointerException("Cannot find the file from the jar!")
+
+        Files.copy(stream, destination, *options)
+    }
+}
+
+/**
+ * loads a file from the jar to a certain location
+ *
+ * @param source the file inside the .jar
+ * @param path the file destination
+ * @param options the options to load the file
+ *
+ * @throws NullPointerException if the file inside the jar cannot be found
+ * @see Files.copy
+ */
+fun Any.loadFile(source: String, destination: Path, vararg options: CopyOption) =
+    loadFile(this::class.java, source, destination, *options)
 
 // ------------------------------------ //
 //                 Thread               //
 // ------------------------------------ //
 
+/** sleeps a thread */
+fun sleep(millis: Long, timeUnit: TimeUnit = TimeUnit.MILLISECONDS) =
+    Thread.sleep(timeUnit.toMillis(millis))
+
 /** safely sleeps a thread */
 fun safeSleep(millis: Long, timeUnit: TimeUnit = TimeUnit.MILLISECONDS) =
-    safeRun(false) { Thread.sleep(timeUnit.toMillis(millis)) }
+    sleep(millis, timeUnit)
 
 // ------------------------------------ //
 //               Date Format            //
@@ -156,6 +207,7 @@ fun safeSleep(millis: Long, timeUnit: TimeUnit = TimeUnit.MILLISECONDS) =
  *
  * @param millis  the millis
  * @param pattern the pattern
+ *
  * @return the formatted date
  */
 fun dateFormat(pattern: String, millis: Long = System.currentTimeMillis()): String {
