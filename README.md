@@ -39,17 +39,6 @@ dependencies {
 }
 ```
 
-#### Gradle (Kotlin)
-```kotlin
-repositories {
-    maven("https://dl.bintray.com/alviannn/maven")
-}
-
-dependencies {
-    implementation("dev.luckynetwork.alviann.commons:LuckyCommons:1.0.3")
-}
-```
-
 <br>
 
 If you want to use it in your plugin (either Spigot or Bungee plugin)
@@ -75,8 +64,7 @@ public class Main extends JavaPlugin {
 ```kotlin
 class Main : JavaPlugin() {
 
-    override fun onEnable() {
-        LuckyCommons.loadInjector(this)
+    override fun onEnable() { LuckyCommons.loadInjector(this)
     }
 
 }
