@@ -23,6 +23,7 @@ import org.bukkit.inventory.meta.SkullMeta
 @Suppress("unused")
 class ItemBuilder : Cloneable {
 
+    @JvmOverloads
     constructor(material: Material, amount: Int = 1, durability: Short = 0) {
         item = ItemStack(material, amount, durability)
     }
@@ -39,6 +40,7 @@ class ItemBuilder : Cloneable {
 
         /** create an itemstack the shortest way */
         @JvmStatic
+        @JvmOverloads
         fun toItem(material: Material, amount: Int = 1, durability: Short = 0) =
             ItemBuilder(material, amount, durability)
 
@@ -174,6 +176,7 @@ class ItemBuilder : Cloneable {
     /**
      * adds an enchantment to the item (unsafe enchantment is allowed)
      */
+    @JvmOverloads
     fun addEnchantment(enchantment: Enchantment, level: Int = 1): ItemBuilder {
         item.addUnsafeEnchantment(enchantment, level)
         return this

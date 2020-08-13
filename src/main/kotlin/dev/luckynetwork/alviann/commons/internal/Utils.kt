@@ -3,9 +3,10 @@
 package dev.luckynetwork.alviann.commons.internal
 
 import dev.luckynetwork.alviann.commons.closer.Closer
+import dev.luckynetwork.alviann.commons.objects.JavaValue
+import dev.luckynetwork.alviann.commons.objects.SafeFunction
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async
-import net.md_5.bungee.api.ChatColor
 import java.io.BufferedInputStream
 import java.io.File
 import java.nio.file.CopyOption
@@ -44,13 +45,6 @@ fun Any.stringify(): String {
 
 /** parses the string to UUID */
 fun String.toUUID(): UUID = UUID.fromString(this)
-
-/** translates the string to a minecraft chat color*/
-fun String.colorize(): String =
-    ChatColor.translateAlternateColorCodes('&', this)
-
-/** translates all string to minecraft chat color*/
-fun List<String>.colorize() = this.map { it.colorize() }
 
 /** parses a string to a json */
 fun String.toJson() = parseToJson(this)
@@ -115,8 +109,11 @@ fun <T> runAsync(context: CoroutineContext, block: () -> T): CompletableFuture<T
 
 /**
  * runs a function inside the [block] safely
+ *
  * if any error is thrown, depending on the [printError] it may print it to the console
+ * just like any other thrown exceptions
  */
+@JvmSynthetic
 fun <T> safeRun(printError: Boolean = true, block: () -> T): T? {
     try {
         return block()
@@ -126,8 +123,41 @@ fun <T> safeRun(printError: Boolean = true, block: () -> T): T? {
     return null
 }
 
+/**
+ * runs an instructions under the [block] safely
+ *
+ * if any error is thrown, depending on the [printError] it may print it to the console
+ * just like any other thrown exceptions
+ */
+@JvmOverloads
+fun <T> safeRun(printError: Boolean = true, block: SafeFunction<T?>): T? {
+    try {
+        return block.invoke()
+    } catch (e: Throwable) {
+        if (printError) e.printStackTrace()
+    }
+    return null
+}
+
 /** creates a [Closer] block */
+@JvmSynthetic
 fun closer(block: (Closer) -> Unit) = Closer().use(block)
+
+/** @see JavaValue */
+@Suppress("HasPlatformType")
+fun <T> jvmValue(value: T) = JavaValue.valueOf(value)
+
+/** @see JavaValue */
+@Suppress("HasPlatformType")
+fun <T> jvmValue(block: () -> T) = JavaValue.valueFromBlock(block)
+
+/** @see JavaValue */
+@Suppress("HasPlatformType")
+fun <T> javaValue(value: T) = JavaValue.valueOf(value)
+
+/** @see JavaValue */
+@Suppress("HasPlatformType")
+fun <T> javaValue(block: () -> T) = JavaValue.valueFromBlock(block)
 
 // ------------------------------------ //
 //                 File                 //
@@ -158,7 +188,7 @@ val Class<*>.currentJarFile
  *
  * @param clazz the class which has the correct [ClassLoader]
  * @param source the file inside the .jar
- * @param path the file destination
+ * @param destination the file destination
  * @param options the options to load the file
  *
  * @throws NullPointerException if the file inside the jar cannot be found
@@ -177,7 +207,7 @@ fun loadFile(clazz: Class<*>, source: String, destination: Path, vararg options:
  * loads a file from the jar to a certain location
  *
  * @param source the file inside the .jar
- * @param path the file destination
+ * @param destination the file destination
  * @param options the options to load the file
  *
  * @throws NullPointerException if the file inside the jar cannot be found
@@ -191,10 +221,12 @@ fun Any.loadFile(source: String, destination: Path, vararg options: CopyOption) 
 // ------------------------------------ //
 
 /** sleeps a thread */
+@JvmOverloads
 fun sleep(millis: Long, timeUnit: TimeUnit = TimeUnit.MILLISECONDS) =
     Thread.sleep(timeUnit.toMillis(millis))
 
 /** safely sleeps a thread */
+@JvmOverloads
 fun safeSleep(millis: Long, timeUnit: TimeUnit = TimeUnit.MILLISECONDS) =
     sleep(millis, timeUnit)
 
@@ -210,6 +242,7 @@ fun safeSleep(millis: Long, timeUnit: TimeUnit = TimeUnit.MILLISECONDS) =
  *
  * @return the formatted date
  */
+@JvmOverloads
 fun dateFormat(pattern: String, millis: Long = System.currentTimeMillis()): String {
     val dateFormat = SimpleDateFormat(pattern)
     dateFormat.timeZone = TimeZone.getTimeZone("Asia/Bangkok")

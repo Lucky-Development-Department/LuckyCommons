@@ -37,6 +37,7 @@ class Scheduler : AutoCloseable {
      *
      * @throws IllegalArgumentException if the [initialDelay] or [period] is anywhere below 0
      */
+    @JvmOverloads
     fun scheduleRepeating(
         block: () -> Unit,
         initialDelay: Long,
@@ -53,6 +54,7 @@ class Scheduler : AutoCloseable {
      *
      * @throws IllegalArgumentException if the [delay] is anywhere below 0
      */
+    @JvmOverloads
     fun <T> scheduleDelay(
         block: () -> T,
         delay: Long,

@@ -3,7 +3,8 @@
 package dev.luckynetwork.alviann.commons.internal
 
 import dev.luckynetwork.alviann.commons.builder.ItemBuilder
-import dev.luckynetwork.alviann.commons.reflection.ReflectionUtils
+import dev.luckynetwork.alviann.commons.reflection.Reflections
+import net.md_5.bungee.api.ChatColor
 import org.bukkit.*
 import org.bukkit.attribute.Attribute
 import org.bukkit.command.CommandExecutor
@@ -28,8 +29,8 @@ val Player.ping: Int
         var ping = 0
 
         safeRun(false) {
-            with(ReflectionUtils) {
-                val handle = this.invokeMethod(Player::class.java, player, "getHandle")!!
+            with(Reflections) {
+                val handle = this.findMethod(Player::class.java, "getHandle")!!.invoke(player)!!
                 ping = this.getField(handle::class.java, handle, "ping") as Int
             }
         }
@@ -46,18 +47,22 @@ fun Player.safeRespawn(plugin: Plugin) {
 fun Player.respawn() = this.spigot().respawn()
 
 /** plays a sound */
+@JvmOverloads
 fun Player.playSound(sound: Sound, volume: Float = 1.0F, pitch: Float = 1.0F) =
     this.playSound(location, sound, volume, pitch)
 
 /** plays a sound */
+@JvmOverloads
 fun Player.playSound(sound: String, volume: Float = 1.0F, pitch: Float = 1.0F) =
     this.playSound(location, sound, volume, pitch)
 
 /** plays a sound with the [SoundCategory] */
+@JvmOverloads
 fun Player.playSound(sound: Sound, category: SoundCategory, volume: Float = 1.0F, pitch: Float = 1.0F) =
     this.playSound(location, sound, category, volume, pitch)
 
 /** plays a sound with the [SoundCategory] */
+@JvmOverloads
 fun Player.playSound(sound: String, category: SoundCategory, volume: Float = 1.0F, pitch: Float = 1.0F) =
     this.playSound(location, sound, category, volume, pitch)
 
@@ -74,6 +79,7 @@ fun Player.getNearbyPlayers(x: Double, y: Double, z: Double) =
  *
  * @param clearArmor do you also want to clear the player armor?
  */
+@JvmOverloads
 fun Player.clearInventory(clearArmor: Boolean = false) {
     this.inventory.clear()
     if (clearArmor)
@@ -89,6 +95,7 @@ fun Player.clearPotionEffects() = this.activePotionEffects.clear()
  * @param foodLevel do you also want to restores the player's food level?
  */
 @Suppress("DEPRECATION")
+@JvmOverloads
 fun Player.heal(foodLevel: Boolean = false) {
     try {
         this.health = this.getAttribute(Attribute.GENERIC_MAX_HEALTH).value
@@ -110,9 +117,9 @@ val Server.rawTps: DoubleArray
         var tps: DoubleArray?
 
         SoundCategory.PLAYERS
-        with(ReflectionUtils) {
-            val serverClass = ReflectionUtils.SPIGOT.getNMSClass("MinecraftServer")
-            val instance = this.invokeMethod(serverClass, null, "getServer")
+        with(Reflections) {
+            val serverClass = Reflections.SPIGOT.getNMSClass("MinecraftServer")
+            val instance = this.findMethod(serverClass, "getServer")!!.invoke(null)
 
             tps = this.getField(serverClass.superclass, instance, "recentTps") as DoubleArray
         }
@@ -140,7 +147,7 @@ val Server.firstTps
  */
 fun Server.restartServer() {
     val restartCmdClass = Class.forName("org.spigotmc.RestartCommand")
-    ReflectionUtils.invokeMethod(restartCmdClass, null, "restart")
+    Reflections.findMethod(restartCmdClass, "restart")!!.invoke(null)
 }
 
 // ------------------------------------ //
@@ -159,6 +166,7 @@ fun Plugin.restartServer() = this.server.restartServer()
 /**
  * registers a command and allow to chain the usage (for kotlin only)
  */
+@JvmSynthetic
 fun JavaPlugin.registerCommand(command: String, executor: CommandExecutor): JavaPlugin {
     this.getCommand(command).executor = executor
     return this
@@ -167,6 +175,7 @@ fun JavaPlugin.registerCommand(command: String, executor: CommandExecutor): Java
 /**
  * registers a listener and allow to chain the usage (for kotlin only)
  */
+@JvmSynthetic
 fun JavaPlugin.registerListeners(listener: Listener): JavaPlugin {
     this.server.pluginManager.registerEvents(listener, this)
     return this
@@ -205,6 +214,7 @@ fun ConfigurationSection.getSection(path: String): ConfigurationSection? =
  *
  * @param saveChunks do you want to save the world chunks?
  */
+@JvmOverloads
 fun World.delete(saveChunks: Boolean = false) {
     val worldFolder = this.worldFolder
     safeRun { Bukkit.unloadWorld(this, saveChunks) }
@@ -217,3 +227,14 @@ fun World.delete(saveChunks: Boolean = false) {
 
 /** transforms the [ItemStack] into an [ItemBuilder] */
 fun ItemStack.toBuilder() = ItemBuilder(this)
+
+// ------------------------------------ //
+//                String                //
+// ------------------------------------ //
+
+/** translates the string to a minecraft chat color*/
+fun String.colorize(): String =
+    ChatColor.translateAlternateColorCodes('&', this)
+
+/** translates all string to minecraft chat color*/
+fun List<String>.colorize() = this.map { it.colorize() }

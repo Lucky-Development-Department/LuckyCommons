@@ -13,6 +13,7 @@ plugins {
     id("com.github.johnrengelman.shadow") version "6.0.0"
     id("org.jetbrains.dokka") version "0.10.1"
     id("com.jfrog.bintray") version "1.8.5"
+    id("io.franzbecker.gradle-lombok") version "3.2.0"
 }
 
 val artifactName = "LuckyCommons"
@@ -40,7 +41,7 @@ val deployConfig = Properties()
     }
 
 group = "dev.luckynetwork.alviann.commons"
-version = "1.0.2"
+version = "1.0.3"
 
 repositories {
     mavenLocal()
@@ -53,9 +54,9 @@ repositories {
 
 dependencies {
 
-    fun depend(dependency: String) {
-        this.compileOnly(dependency)
-        this.testCompileOnly(dependency)
+    fun depend(dependency: Any) {
+         this.compileOnly(dependency)
+         this.testCompileOnly(dependency)
     }
 
     // annotations
@@ -66,12 +67,13 @@ dependencies {
     depend("org.jetbrains.kotlin:kotlin-stdlib-common:1.3.72")
     depend("org.jetbrains.kotlin:kotlin-reflect:1.3.72")
 
+    depend("org.projectlombok:lombok:1.18.12")
+
     // kotlin coroutines
     depend("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.8")
     depend("org.jetbrains.kotlinx:kotlinx-coroutines-core-common:1.3.8")
 
     // the spigot api
-    //depend("org.spigotmc:spigot-api:1.8.8-R0.1-SNAPSHOT")
     depend("org.spigotmc:spigot-api:1.12.2-R0.1-SNAPSHOT")
     // the bungeecord api
     depend("net.md-5:bungeecord-api:1.16-R0.3")
@@ -91,11 +93,18 @@ val dokkaJar by tasks.creating(Jar::class) {
 
 tasks {
 
-    compileKotlin { kotlinOptions.jvmTarget = "1.8" }
-    compileTestKotlin { kotlinOptions.jvmTarget = "1.8" }
+    compileKotlin { kotlinOptions.jvmTarget = JavaVersion.VERSION_1_8.toString() }
+    compileTestKotlin { kotlinOptions.jvmTarget = JavaVersion.VERSION_1_8.toString() }
 
     compileJava {
         options.encoding = "UTF-8"
+        sourceCompatibility = JavaVersion.VERSION_1_8.toString()
+        targetCompatibility = JavaVersion.VERSION_1_8.toString()
+    }
+    compileTestJava {
+        options.encoding = "UTF-8"
+        sourceCompatibility = JavaVersion.VERSION_1_8.toString()
+        targetCompatibility = JavaVersion.VERSION_1_8.toString()
     }
 
     jar {
@@ -121,11 +130,6 @@ tasks {
 
     dokkaJar.run { }
 
-}
-
-java {
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
 }
 
 bintray {

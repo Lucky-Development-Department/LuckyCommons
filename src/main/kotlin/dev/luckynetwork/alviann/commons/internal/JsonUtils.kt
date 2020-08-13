@@ -87,25 +87,31 @@ fun JsonObject.getString(member: String): String? {
 }
 
 /** creates adds a property to the [JsonObject] and make it chain-able */
+@JvmSynthetic
 fun JsonObject.addChain(property: String, value: String) =
     chainJson(this, property, value)
 
 /** creates adds a property to the [JsonObject] and make it chain-able */
+@JvmSynthetic
 fun JsonObject.addChain(property: String, value: Number) =
     chainJson(this, property, value)
 
 /** creates adds a property to the [JsonObject] and make it chain-able */
+@JvmSynthetic
 fun JsonObject.addChain(property: String, value: Boolean) =
     chainJson(this, property, value)
 
 /** creates adds a property to the [JsonObject] and make it chain-able */
+@JvmSynthetic
 fun JsonObject.addChain(property: String, value: Char) =
     chainJson(this, property, value)
 
 /** creates adds a property to the [JsonObject] and make it chain-able */
+@JvmSynthetic
 fun JsonObject.addChain(property: String, value: JsonElement) =
     chainJson(this, property, value)
 
+@JvmSynthetic
 private fun chainJson(json: JsonObject, property: String, value: Any): JsonObject {
     when (value) {
         is String -> json.addProperty(property, value)

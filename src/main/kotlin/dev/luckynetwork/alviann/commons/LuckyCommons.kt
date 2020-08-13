@@ -9,7 +9,7 @@ object LuckyCommons {
 
     /** loads LuckyInjector dependencies depending on it's platform */
     @JvmStatic
-    fun loadInjector(instance: Any) = when (instance::class.java.name) {
+    fun loadInjector(instance: Any) = when (instance.javaClass.name) {
         "net.md_5.bungee.api.plugin.Plugin" -> {
             BungeeInjector.loadEarly()
         }
@@ -21,7 +21,8 @@ object LuckyCommons {
     }
 
     /** gets the default [SQLBuilder] object depending on it's platform */
-    fun getDefaultSQLBuilder(instance: Any): SQLBuilder = when (instance::class.java.name) {
+    @JvmStatic
+    fun getDefaultSQLBuilder(instance: Any): SQLBuilder = when (instance.javaClass.name) {
         "net.md_5.bungee.api.plugin.Plugin" -> {
             BungeeInjector.getDefaultSQLBuilder()
         }
