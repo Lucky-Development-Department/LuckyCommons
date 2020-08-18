@@ -18,7 +18,7 @@ class Scheduler : AutoCloseable {
         get() = executor.isTerminated || executor.isTerminated
 
     /** the existing task list */
-    val tasks: MutableSet<ScheduledTask<*>> = ConcurrentHashMap.newKeySet<ScheduledTask<*>>()
+    val tasks: MutableSet<ScheduledTask<*>> = ConcurrentHashMap.newKeySet()
 
     /**
      * terminates the scheduler

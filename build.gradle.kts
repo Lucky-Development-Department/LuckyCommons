@@ -5,7 +5,7 @@ import java.io.IOException
 import java.util.*
 
 plugins {
-    kotlin("jvm") version "1.3.72"
+    kotlin("jvm") version "1.4.0"
 
     `maven-publish`
     java
@@ -41,7 +41,7 @@ val deployConfig = Properties()
     }
 
 group = "dev.luckynetwork.alviann.commons"
-version = "1.0.3"
+version = "1.0.4"
 
 repositories {
     mavenLocal()
@@ -60,18 +60,15 @@ dependencies {
     }
 
     // annotations
-    depend("org.jetbrains:annotations:19.0.0")
+    depend("org.jetbrains:annotations:20.0.0")
     // kotlin libraries
-    depend("org.jetbrains.kotlin:kotlin-stdlib:1.3.72")
-    depend("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.3.72")
-    depend("org.jetbrains.kotlin:kotlin-stdlib-common:1.3.72")
-    depend("org.jetbrains.kotlin:kotlin-reflect:1.3.72")
+    depend("org.jetbrains.kotlin:kotlin-stdlib:1.4.0")
+    depend("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.4.0")
+    depend("org.jetbrains.kotlin:kotlin-stdlib-common:1.4.0")
+    depend("org.jetbrains.kotlin:kotlin-reflect:1.4.0")
+    depend("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.9")
 
     depend("org.projectlombok:lombok:1.18.12")
-
-    // kotlin coroutines
-    depend("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.8")
-    depend("org.jetbrains.kotlinx:kotlinx-coroutines-core-common:1.3.8")
 
     // the spigot api
     depend("org.spigotmc:spigot-api:1.12.2-R0.1-SNAPSHOT")
