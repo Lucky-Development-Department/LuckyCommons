@@ -7,7 +7,7 @@ import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 
-@Suppress("MemberVisibilityCanBePrivate")
+@Suppress("MemberVisibilityCanBePrivate", "unused")
 class Scheduler : AutoCloseable {
 
     val executor: ExecutorService = Executors.newCachedThreadPool()

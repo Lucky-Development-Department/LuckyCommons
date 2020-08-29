@@ -6,7 +6,7 @@ import dev.luckynetwork.alviann.commons.internal.safeSleep
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.atomic.AtomicBoolean
 
-@Suppress("MemberVisibilityCanBePrivate")
+@Suppress("MemberVisibilityCanBePrivate", "unused")
 class ScheduledTask<T>(
     /** the block to run the task */
     val block: () -> T,
@@ -45,11 +45,11 @@ class ScheduledTask<T>(
      */
     fun await(): T? {
         if (!isRunning)
-            throw IllegalStateException("The task isn't currently running!")
+            throw IllegalStateException("The task is no longer running!")
         if (type == Type.REPEATING)
             throw IllegalStateException("Cannot wait a repeating task!")
 
-        return future.get()
+        return future.join()
     }
 
     /**

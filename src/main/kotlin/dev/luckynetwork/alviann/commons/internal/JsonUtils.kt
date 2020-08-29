@@ -6,15 +6,15 @@ import com.google.gson.*
 import com.google.gson.stream.JsonReader
 import java.io.Reader
 
-val defaultGson: Gson = GsonBuilder().create()
-val prettyGson: Gson = GsonBuilder().setPrettyPrinting().create()
+val defaultGson = GsonBuilder().create()!!
+val prettyGson = GsonBuilder().setPrettyPrinting().create()!!
 
 /** the default json parser (supports all versions) */
 @Suppress("DEPRECATION")
 val defaultParser = JsonParser()
 
 /** prettifies the json string */
-fun JsonElement.toPrettyString(): String = prettyGson.toJson(this)
+fun JsonElement.toPrettyString() = prettyGson.toJson(this)!!
 
 /**
  * transforms the array to an array of string
@@ -24,6 +24,18 @@ fun JsonArray.asStringArray(): Array<String> {
 
     for (element in this)
         list.add(element.asString)
+
+    return list.toTypedArray()
+}
+
+/**
+ * transforms the array to an array of [Number]
+ */
+fun JsonArray.asNumberArray(): Array<Number> {
+    val list = ArrayList<Number>()
+
+    for (element in this)
+        list.add(element.asNumber)
 
     return list.toTypedArray()
 }
@@ -88,31 +100,31 @@ fun JsonObject.getString(member: String): String? {
 
 /** creates adds a property to the [JsonObject] and make it chain-able */
 @JvmSynthetic
-fun JsonObject.addChain(property: String, value: String) =
-    chainJson(this, property, value)
+fun JsonObject.chain(property: String, value: String) =
+    createChain(this, property, value)
 
 /** creates adds a property to the [JsonObject] and make it chain-able */
 @JvmSynthetic
-fun JsonObject.addChain(property: String, value: Number) =
-    chainJson(this, property, value)
+fun JsonObject.chain(property: String, value: Number) =
+    createChain(this, property, value)
 
 /** creates adds a property to the [JsonObject] and make it chain-able */
 @JvmSynthetic
-fun JsonObject.addChain(property: String, value: Boolean) =
-    chainJson(this, property, value)
+fun JsonObject.chain(property: String, value: Boolean) =
+    createChain(this, property, value)
 
 /** creates adds a property to the [JsonObject] and make it chain-able */
 @JvmSynthetic
-fun JsonObject.addChain(property: String, value: Char) =
-    chainJson(this, property, value)
+fun JsonObject.chain(property: String, value: Char) =
+    createChain(this, property, value)
 
 /** creates adds a property to the [JsonObject] and make it chain-able */
 @JvmSynthetic
-fun JsonObject.addChain(property: String, value: JsonElement) =
-    chainJson(this, property, value)
+fun JsonObject.chain(property: String, value: JsonElement) =
+    createChain(this, property, value)
 
 @JvmSynthetic
-private fun chainJson(json: JsonObject, property: String, value: Any): JsonObject {
+private fun createChain(json: JsonObject, property: String, value: Any): JsonObject {
     when (value) {
         is String -> json.addProperty(property, value)
         is Number -> json.addProperty(property, value)

@@ -166,18 +166,18 @@ fun <T> javaValue(block: () -> T) = JavaValue.valueFromBlock(block)
 /**
  * gets a stream of a file from the jar
  *
- * @param clazz the class which will be transformed to a [ClassLoader] to get the stream
  * @param name the file inside the .jar
  */
-fun getResourceStream(clazz: Class<*>, name: String): BufferedInputStream? =
-    clazz.classLoader.getResourceStream(name)?.buffered()
+fun Class<*>.getResourceStream(name: String): BufferedInputStream? =
+    this.classLoader.getResourceAsStream(name)?.buffered()
 
 /**
  * gets a stream of a file from the jar
  *
  * @param name the file inside the .jar
  */
-fun Any.getResourceStream(name: String) = getResourceStream(this::class.java, name)
+fun Any.getResourceStream(name: String): BufferedInputStream? =
+    this.javaClass.getResourceStream(name)
 
 /** gets the plugin jar file */
 val Class<*>.currentJarFile
@@ -186,7 +186,6 @@ val Class<*>.currentJarFile
 /**
  * loads a file from the jar to a certain location
  *
- * @param clazz the class which has the correct [ClassLoader]
  * @param source the file inside the .jar
  * @param destination the file destination
  * @param options the options to load the file
@@ -194,9 +193,9 @@ val Class<*>.currentJarFile
  * @throws NullPointerException if the file inside the jar cannot be found
  * @see Files.copy
  */
-fun loadFile(clazz: Class<*>, source: String, destination: Path, vararg options: CopyOption) {
+fun Class<*>.loadFile(source: String, destination: Path, vararg options: CopyOption) {
     closer {
-        val stream = it.add(getResourceStream(clazz, source))
+        val stream = it.add(this.getResourceStream(source))
             ?: throw NullPointerException("Cannot find the file from the jar!")
 
         Files.copy(stream, destination, *options)
@@ -214,7 +213,7 @@ fun loadFile(clazz: Class<*>, source: String, destination: Path, vararg options:
  * @see Files.copy
  */
 fun Any.loadFile(source: String, destination: Path, vararg options: CopyOption) =
-    loadFile(this::class.java, source, destination, *options)
+    this.javaClass.loadFile(source, destination, *options)
 
 // ------------------------------------ //
 //                 Thread               //
@@ -235,7 +234,7 @@ fun safeSleep(millis: Long, timeUnit: TimeUnit = TimeUnit.MILLISECONDS) =
 // ------------------------------------ //
 
 /**
- * builds a date from pattern format (UTC+7)
+ * builds a date from pattern format
  *
  * @param millis  the millis
  * @param pattern the pattern
@@ -243,8 +242,11 @@ fun safeSleep(millis: Long, timeUnit: TimeUnit = TimeUnit.MILLISECONDS) =
  * @return the formatted date
  */
 @JvmOverloads
-fun dateFormat(pattern: String, millis: Long = System.currentTimeMillis()): String {
+fun dateFormat(pattern: String, timeZone: String? = "Asia/Bangkok", millis: Long = System.currentTimeMillis()): String {
     val dateFormat = SimpleDateFormat(pattern)
-    dateFormat.timeZone = TimeZone.getTimeZone("Asia/Bangkok")
+
+    if (timeZone != null)
+        dateFormat.timeZone = TimeZone.getTimeZone(timeZone)
+
     return dateFormat.format(millis)
 }

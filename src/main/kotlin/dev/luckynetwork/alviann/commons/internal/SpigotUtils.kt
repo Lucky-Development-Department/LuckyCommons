@@ -39,9 +39,7 @@ val Player.ping: Int
     }
 
 /** respawns the player safely */
-fun Player.safeRespawn(plugin: Plugin) {
-    Bukkit.getScheduler().runTask(plugin) { this.spigot().respawn() }
-}
+fun Player.safeRespawn(plugin: Plugin) = Bukkit.getScheduler().runTask(plugin) { this.spigot().respawn() }
 
 /** respawns the player */
 fun Player.respawn() = this.spigot().respawn()
@@ -97,10 +95,10 @@ fun Player.clearPotionEffects() = this.activePotionEffects.clear()
 @Suppress("DEPRECATION")
 @JvmOverloads
 fun Player.heal(foodLevel: Boolean = false) {
-    try {
-        this.health = this.getAttribute(Attribute.GENERIC_MAX_HEALTH).value
+    this.health = try {
+        this.getAttribute(Attribute.GENERIC_MAX_HEALTH).value
     } catch (_: Exception) {
-        this.health = this.maxHealth
+        this.maxHealth
     }
 
     if (foodLevel)
@@ -130,10 +128,17 @@ val Server.rawTps: DoubleArray
         return tps!!
     }
 
+/** gets the server TPS with correct format or at least more readable */
+val Server.tps: DoubleArray
+    get() {
+        // original: Math.min(Math.round(tps * 100.0D) / 100.0D, 20.0D)
+        fun round(double: Double) = ((double * 100.0).roundToInt() / 100.0).coerceAtMost(20.0)
+
+        return this.rawTps.map { round(it) }.toDoubleArray()
+    }
+
 /** gets the first index of the [Server.rawTps] and is formatted correctly */
-val Server.firstTps
-    // original: Math.min(Math.round(tps * 100.0D) / 100.0D, 20.0D)
-    get() = ((this.rawTps[0] * 100.0).roundToInt() / 100.0).coerceAtMost(20.0)
+val Server.firstTps get() = this.tps[0]
 
 /**
  * restarts the server
@@ -226,7 +231,7 @@ fun World.delete(saveChunks: Boolean = false) {
 // ------------------------------------ //
 
 /** transforms the [ItemStack] into an [ItemBuilder] */
-fun ItemStack.toBuilder() = ItemBuilder(this)
+fun ItemStack.builder() = ItemBuilder(this)
 
 // ------------------------------------ //
 //                String                //
