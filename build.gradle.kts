@@ -41,7 +41,7 @@ val deployConfig = Properties()
     }
 
 group = "dev.luckynetwork.alviann.commons"
-version = "1.0.5"
+version = "1.0.6"
 
 repositories {
     mavenLocal()
@@ -76,7 +76,7 @@ dependencies {
     depend("net.md-5:bungeecord-api:1.16-R0.3")
 
     // extra libraries
-    depend("com.github.Alviannn:LuckyInjector:1.6.2")
+    depend("com.github.Alviannn:LuckyInjector:1.6.4")
     depend("com.github.Alviannn:SQLHelper:2.5.6")
 }
 
