@@ -25,7 +25,7 @@ class JsonConfig(
                 val clazz = pair.first
                 val source = pair.second
 
-                loadFile(clazz, source, file.toPath(), StandardCopyOption.REPLACE_EXISTING)
+                clazz.loadFile(source, file.toPath(), StandardCopyOption.REPLACE_EXISTING)
             } else {
                 throw FileNotFoundException("Cannot find file named ${file.name}!")
             }
