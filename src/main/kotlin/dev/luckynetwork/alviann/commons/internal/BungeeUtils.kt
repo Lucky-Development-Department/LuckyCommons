@@ -14,21 +14,21 @@ import net.md_5.bungee.event.EventHandler
 val Plugin.pluginManager get() = this.proxy.pluginManager!!
 
 /**
- * Register a command so that it may be executed.
+ * Register command(s) so that it may be executed.
  *
  * @param command the command to register
  */
 @JvmSynthetic
-fun Plugin.registerCommand(command: Command) =
-    this.pluginManager.registerCommand(this, command)
+fun Plugin.registerCommand(vararg command: Command) =
+    command.forEach { this.pluginManager.registerCommand(this, it) }
 
 /**
- * Register a [Listener] for receiving called events. Methods in this
+ * Register listener(s) for receiving called events. Methods in this
  * Object which wish to receive events must be annotated with the
  * [EventHandler] annotation.
  *
  * @param listener the listener to register events for
  */
 @JvmSynthetic
-fun Plugin.registerListeners(listener: Listener) =
-    this.pluginManager.registerListener(this, listener)
+fun Plugin.registerListeners(vararg listener: Listener) =
+    listener.forEach { this.pluginManager.registerListener(this, it) }

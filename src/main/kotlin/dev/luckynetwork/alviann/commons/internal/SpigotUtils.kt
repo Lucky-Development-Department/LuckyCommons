@@ -1,4 +1,5 @@
 @file:JvmName("SpigotUtils")
+@file:Suppress("unused")
 
 package dev.luckynetwork.alviann.commons.internal
 
@@ -22,7 +23,7 @@ import kotlin.math.roundToInt
 //                 Player               //
 // ------------------------------------ //
 
-/** gets the player's ping, if none is found it's gonna return `0` */
+/** Gets the player's ping, if none is found it's gonna return `0` */
 val Player.ping: Int
     get() {
         val player = this
@@ -38,42 +39,42 @@ val Player.ping: Int
         return ping
     }
 
-/** respawns the player safely */
-fun Player.safeRespawn(plugin: Plugin) = Bukkit.getScheduler().runTask(plugin) { this.spigot().respawn() }
+/** Respawns the player safely */
+fun Player.safeRespawn(plugin: Plugin) = Bukkit.getScheduler().runTask(plugin) { this.spigot().respawn() }!!
 
-/** respawns the player */
+/** Respawns the player */
 fun Player.respawn() = this.spigot().respawn()
 
-/** plays a sound */
+/** Plays a sound */
 @JvmOverloads
 fun Player.playSound(sound: Sound, volume: Float = 1.0F, pitch: Float = 1.0F) =
     this.playSound(location, sound, volume, pitch)
 
-/** plays a sound */
+/** Plays a sound */
 @JvmOverloads
 fun Player.playSound(sound: String, volume: Float = 1.0F, pitch: Float = 1.0F) =
     this.playSound(location, sound, volume, pitch)
 
-/** plays a sound with the [SoundCategory] */
+/** Plays a sound with the [SoundCategory] */
 @JvmOverloads
 fun Player.playSound(sound: Sound, category: SoundCategory, volume: Float = 1.0F, pitch: Float = 1.0F) =
     this.playSound(location, sound, category, volume, pitch)
 
-/** plays a sound with the [SoundCategory] */
+/** Plays a sound with the [SoundCategory] */
 @JvmOverloads
 fun Player.playSound(sound: String, category: SoundCategory, volume: Float = 1.0F, pitch: Float = 1.0F) =
     this.playSound(location, sound, category, volume, pitch)
 
-/** sends multiple messages at once */
+/** Sends multiple messages at once */
 fun Player.sendMessage(vararg message: String) =
     this.sendMessage(message.toList().joinToString("\n"))
 
-/** gets all nearby players */
+/** Gets all nearby players */
 fun Player.getNearbyPlayers(x: Double, y: Double, z: Double) =
     this.getNearbyEntities(x, y, z).filterIsInstance<Player>().toImmutable()
 
 /**
- * clears the player's inventory
+ * Clears the player's inventory
  *
  * @param clearArmor do you also want to clear the player armor?
  */
@@ -84,11 +85,11 @@ fun Player.clearInventory(clearArmor: Boolean = false) {
         this.inventory.armorContents = emptyArray()
 }
 
-/** clears the currently active potion effects */
+/** Clears the currently active potion effects */
 fun Player.clearPotionEffects() = this.activePotionEffects.clear()
 
 /**
- * heals the player (restores the player's health)
+ * Heals the player (restores the player's health)
  *
  * @param foodLevel do you also want to restores the player's food level?
  */
@@ -109,7 +110,7 @@ fun Player.heal(foodLevel: Boolean = false) {
 //                Server                //
 // ------------------------------------ //
 
-/** gets the complete raw TPS */
+/** Gets the complete raw TPS */
 val Server.rawTps: DoubleArray
     get() {
         var tps: DoubleArray?
@@ -128,7 +129,7 @@ val Server.rawTps: DoubleArray
         return tps!!
     }
 
-/** gets the server TPS with correct format or at least more readable */
+/** Gets the server TPS with correct format or at least more readable */
 val Server.tps: DoubleArray
     get() {
         // original: Math.min(Math.round(tps * 100.0D) / 100.0D, 20.0D)
@@ -137,17 +138,17 @@ val Server.tps: DoubleArray
         return this.rawTps.map { round(it) }.toDoubleArray()
     }
 
-/** gets the first index of the [Server.rawTps] and is formatted correctly */
+/** Gets the first index of the [Server.rawTps] and is formatted correctly */
 val Server.firstTps get() = this.tps[0]
 
 /**
- * restarts the server
+ * Restarts the server
  *
- * the way it restarts the server is by using the RestartCommand class from and by spigot
+ * The way it restarts the server is by using the RestartCommand class from and by spigot
  * since the class can't be fetched when using the spigot-api dependency it needs to use a reflection
  * the actual way of invoking or executing the class is by just doing `RestartCommand.restart();`
  *
- * well, since the method is public and static we don't need to set the method accessible
+ * Well, since the method is public and static we don't need to set the method accessible
  * and to invoke it we also don't need the class instance, just use a 'null' as an instance will do it perfectly
  */
 fun Server.restartServer() {
@@ -169,7 +170,7 @@ val Plugin.firstTps get() = this.server.firstTps
 fun Plugin.restartServer() = this.server.restartServer()
 
 /**
- * registers a command and allow to chain the usage (for kotlin only)
+ * Registers a command and allow to chain the usage (for kotlin only)
  */
 @JvmSynthetic
 fun JavaPlugin.registerCommand(command: String, executor: CommandExecutor): JavaPlugin {
@@ -178,11 +179,20 @@ fun JavaPlugin.registerCommand(command: String, executor: CommandExecutor): Java
 }
 
 /**
- * registers a listener and allow to chain the usage (for kotlin only)
+ * Registers multiple commands (pairs of main command name and command object)
  */
 @JvmSynthetic
-fun JavaPlugin.registerListeners(listener: Listener): JavaPlugin {
-    this.server.pluginManager.registerEvents(listener, this)
+fun JavaPlugin.registerCommand(vararg commandPair: Pair<String, CommandExecutor>): JavaPlugin {
+    commandPair.forEach { this.registerCommand(it.first, it.second) }
+    return this
+}
+
+/**
+ * Registers listener(s) and allow to chain the usage (for kotlin only)
+ */
+@JvmSynthetic
+fun JavaPlugin.registerListeners(vararg listener: Listener): JavaPlugin {
+    listener.forEach { this.server.pluginManager.registerEvents(it, this) }
     return this
 }
 
@@ -190,15 +200,15 @@ fun JavaPlugin.registerListeners(listener: Listener): JavaPlugin {
 //          InventoryClickEvent         //
 // ------------------------------------ //
 
-/** checks if the clicked item is `null` or the clicked inventory is `null` */
+/** Determines if the item clicked or clicked inventory is `null` */
 val InventoryClickEvent.isItemOrInventoryNull
     get() = this.currentItem == null || this.clickedInventory == null
 
-/** checks if the clicked item is [Material.AIR] */
+/** Determines if the clicked item is [Material.AIR] */
 val InventoryClickEvent.isItemAir
     get() = this.currentItem.type == Material.AIR
 
-/** checks if the clicked slot is outside of the inventory */
+/** Determines if the player clicks is outsite of the supposed inventory event */
 val InventoryClickEvent.isClickedOutside
     get() = this.slotType == InventoryType.SlotType.OUTSIDE
 
@@ -206,7 +216,7 @@ val InventoryClickEvent.isClickedOutside
 //             Configuration            //
 // ------------------------------------ //
 
-/** shortened version of [ConfigurationSection.getConfigurationSection] */
+/** Shortened version of [ConfigurationSection.getConfigurationSection] */
 fun ConfigurationSection.getSection(path: String): ConfigurationSection? =
     this.getConfigurationSection(path)
 
@@ -215,7 +225,7 @@ fun ConfigurationSection.getSection(path: String): ConfigurationSection? =
 // ------------------------------------ //
 
 /**
- * deletes the world completely without leaving a single trace
+ * Deletes the world completely without leaving a single trace
  *
  * @param saveChunks do you want to save the world chunks?
  */
@@ -230,16 +240,16 @@ fun World.delete(saveChunks: Boolean = false) {
 //               ItemStack              //
 // ------------------------------------ //
 
-/** transforms the [ItemStack] into an [ItemBuilder] */
+/** Transforms the [ItemStack] into an [ItemBuilder] */
 fun ItemStack.builder() = ItemBuilder(this)
 
 // ------------------------------------ //
 //                String                //
 // ------------------------------------ //
 
-/** translates the string to a minecraft chat color*/
+/** Translates the string to a minecraft chat color*/
 fun String.colorize(): String =
     ChatColor.translateAlternateColorCodes('&', this)
 
-/** translates all string to minecraft chat color*/
+/** Translates all string to minecraft chat color*/
 fun List<String>.colorize() = this.map { it.colorize() }

@@ -1,4 +1,5 @@
 @file:JvmName("JsonUtils")
+@file:Suppress("unused")
 
 package dev.luckynetwork.alviann.commons.internal
 
@@ -9,15 +10,15 @@ import java.io.Reader
 val defaultGson = GsonBuilder().create()!!
 val prettyGson = GsonBuilder().setPrettyPrinting().create()!!
 
-/** the default json parser (supports all versions) */
+/** The default json parser (supports all versions) */
 @Suppress("DEPRECATION")
 val defaultParser = JsonParser()
 
-/** prettifies the json string */
+/** Prettifies the json string */
 fun JsonElement.toPrettyString() = prettyGson.toJson(this)!!
 
 /**
- * transforms the array to an array of string
+ * Transforms the array to an array of string
  */
 fun JsonArray.asStringArray(): Array<String> {
     val list = ArrayList<String>()
@@ -29,7 +30,7 @@ fun JsonArray.asStringArray(): Array<String> {
 }
 
 /**
- * transforms the array to an array of [Number]
+ * Transforms the array to an array of [Number]
  */
 fun JsonArray.asNumberArray(): Array<Number> {
     val list = ArrayList<Number>()
@@ -41,9 +42,9 @@ fun JsonArray.asNumberArray(): Array<Number> {
 }
 
 /**
- * gets a [JsonElement] from nodes
+ * Gets a [JsonElement] from nodes
  *
- * for example you have a json file like this
+ * For example you have a json file like this
  * ```json
  * {
  *    "options": {
@@ -52,13 +53,13 @@ fun JsonArray.asNumberArray(): Array<Number> {
  * }
  * ```
  *
- * instead of getting it one by one like this
+ * Instead of getting it one by one like this
  * ```kotlin
  * val json: JsonObject = ...
  * val useSql = json.get("options").asJsonObject.get("use-sql").asBoolean
  * ```
  *
- * you can just simplify it by using
+ * You can just simplify it by using
  * ```kotlin
  * val json: JsonObject = ...
  * val useSql = json.fromNode("options.use-sql").asBoolean
@@ -91,34 +92,34 @@ fun JsonObject.fromNode(nodes: String): JsonElement? {
 
 
 /**
- * gets a string value from json
+ * Gets a string value from json
  */
 fun JsonObject.getString(member: String): String? {
     val element = this.fromNode(member) ?: return null
     return element.asString
 }
 
-/** creates adds a property to the [JsonObject] and make it chain-able */
+/** Creates adds a property to the [JsonObject] and make it chain-able */
 @JvmSynthetic
 fun JsonObject.chain(property: String, value: String) =
     createChain(this, property, value)
 
-/** creates adds a property to the [JsonObject] and make it chain-able */
+/** Creates adds a property to the [JsonObject] and make it chain-able */
 @JvmSynthetic
 fun JsonObject.chain(property: String, value: Number) =
     createChain(this, property, value)
 
-/** creates adds a property to the [JsonObject] and make it chain-able */
+/** Creates adds a property to the [JsonObject] and make it chain-able */
 @JvmSynthetic
 fun JsonObject.chain(property: String, value: Boolean) =
     createChain(this, property, value)
 
-/** creates adds a property to the [JsonObject] and make it chain-able */
+/** Creates adds a property to the [JsonObject] and make it chain-able */
 @JvmSynthetic
 fun JsonObject.chain(property: String, value: Char) =
     createChain(this, property, value)
 
-/** creates adds a property to the [JsonObject] and make it chain-able */
+/** Creates adds a property to the [JsonObject] and make it chain-able */
 @JvmSynthetic
 fun JsonObject.chain(property: String, value: JsonElement) =
     createChain(this, property, value)
@@ -136,14 +137,14 @@ private fun createChain(json: JsonObject, property: String, value: Any): JsonObj
     return json
 }
 
-/** parses a string into a [JsonElement] */
+/** Parses a string into a [JsonElement] */
 @Suppress("DEPRECATION")
 fun parseToJson(string: String) = defaultParser.parse(string)!!
 
-/** parses a reader into a [JsonElement] */
+/** Parses a reader into a [JsonElement] */
 @Suppress("DEPRECATION")
 fun parseToJson(reader: Reader) = defaultParser.parse(reader)!!
 
-/** parses a json reader into a [JsonElement] */
+/** Parses a json reader into a [JsonElement] */
 @Suppress("DEPRECATION")
 fun parseToJson(reader: JsonReader) = defaultParser.parse(reader)!!

@@ -41,7 +41,7 @@ val deployConfig = Properties()
     }
 
 group = "dev.luckynetwork.alviann.commons"
-version = "1.0.7"
+version = "1.0.8"
 
 repositories {
     mavenLocal()
@@ -55,17 +55,17 @@ repositories {
 dependencies {
 
     fun depend(dependency: Any) {
-         this.compileOnly(dependency)
-         this.testCompileOnly(dependency)
+        this.compileOnly(dependency)
+        this.testCompileOnly(dependency)
     }
 
     // annotations
     depend("org.jetbrains:annotations:20.0.0")
     // kotlin libraries
-    depend("org.jetbrains.kotlin:kotlin-stdlib:1.4.0")
-    depend("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.4.0")
-    depend("org.jetbrains.kotlin:kotlin-stdlib-common:1.4.0")
-    depend("org.jetbrains.kotlin:kotlin-reflect:1.4.0")
+    depend("org.jetbrains.kotlin:kotlin-stdlib")
+    depend("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
+    depend("org.jetbrains.kotlin:kotlin-stdlib-common")
+    depend("org.jetbrains.kotlin:kotlin-reflect")
     depend("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.9")
 
     depend("org.projectlombok:lombok:1.18.12")
@@ -90,18 +90,21 @@ val dokkaJar by tasks.creating(Jar::class) {
 
 tasks {
 
-    compileKotlin { kotlinOptions.jvmTarget = JavaVersion.VERSION_1_8.toString() }
-    compileTestKotlin { kotlinOptions.jvmTarget = JavaVersion.VERSION_1_8.toString() }
+    val javaVersion = JavaVersion.VERSION_1_8.toString()
+    val encoding = "UTF-8"
+
+    compileKotlin { kotlinOptions.jvmTarget = javaVersion }
+    compileTestKotlin { kotlinOptions.jvmTarget = javaVersion }
 
     compileJava {
-        options.encoding = "UTF-8"
-        sourceCompatibility = JavaVersion.VERSION_1_8.toString()
-        targetCompatibility = JavaVersion.VERSION_1_8.toString()
+        options.encoding = encoding
+        sourceCompatibility = javaVersion
+        targetCompatibility = javaVersion
     }
     compileTestJava {
-        options.encoding = "UTF-8"
-        sourceCompatibility = JavaVersion.VERSION_1_8.toString()
-        targetCompatibility = JavaVersion.VERSION_1_8.toString()
+        options.encoding = encoding
+        sourceCompatibility = javaVersion
+        targetCompatibility = javaVersion
     }
 
     jar {

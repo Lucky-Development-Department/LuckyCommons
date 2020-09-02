@@ -1,4 +1,5 @@
 @file:JvmName("Utils")
+@file:Suppress("unused")
 
 package dev.luckynetwork.alviann.commons.internal
 
@@ -20,10 +21,10 @@ import kotlin.collections.ArrayList
 import kotlin.coroutines.CoroutineContext
 
 /**
- * this works basically the same as the classical [Any.toString] method
- * but this one is generated based on the class variables and the result can be seen during runtime
+ * This works basically the same as the classical [Any.toString] method
+ * but this one is generated based on the class variables and the result can be seen during runtime.
  *
- * unlike the normal way, you would need to do everything yourself,
+ * Unlike the normal way, you would need to do everything yourself,
  * automatically generate it by using the IDE, etc.
  */
 @Suppress("unused")
@@ -43,20 +44,20 @@ fun Any.stringify(): String {
 //                String                //
 // ------------------------------------ //
 
-/** parses the string to UUID */
+/** Parses the string to UUID */
 fun String.toUUID(): UUID = UUID.fromString(this)
 
-/** parses a string to a json */
+/** Parses a string to a json */
 fun String.toJson() = parseToJson(this)
 
-/** creates a censored string */
+/** Creates a censored string */
 fun String.censor(): String = "*".repeat(this.length)
 
-/** determines if the string is an integer */
+/** Determines if the string is an integer */
 val String.isInt
     get() = this.toIntOrNull() != null
 
-/** determines if a string is a valid minecraft username */
+/** Determines if a string is a valid minecraft username */
 val String.isMinecraftUsername
     get() = this.matches(Regex("^[a-zA-Z_0-9]{3,16}\$"))
 
@@ -64,19 +65,19 @@ val String.isMinecraftUsername
 //           Global Collections         //
 // ------------------------------------ //
 
-/** gets the immutable object of the [Collection] */
+/** Gets the immutable object of the [Collection] */
 fun <T> Collection<T>.toImmutable(): Collection<T> =
     Collections.unmodifiableCollection(this)
 
-/** gets the immutable object of the [List] */
+/** Gets the immutable object of the [List] */
 fun <T> List<T>.toImmutable(): List<T> =
     Collections.unmodifiableList(this)
 
-/** gets the immutable object of the [Map] */
+/** Gets the immutable object of the [Map] */
 fun <K, V> Map<K, V>.toImmutable(): Map<K, V> =
     Collections.unmodifiableMap(this)
 
-/** gets the immutable object of the [Set] */
+/** Gets the immutable object of the [Set] */
 fun <T> Set<T>.toImmutable(): Set<T> =
     Collections.unmodifiableSet(this)
 
@@ -85,7 +86,7 @@ fun <T> Set<T>.toImmutable(): Set<T> =
 // ------------------------------------ //
 
 /**
- * submits a [block] to run asynchronously and can get the result
+ * Submits a [block] to run asynchronously and can get the result
  */
 @Suppress("DeferredResultUnused")
 fun <T> runAsync(context: CoroutineContext, block: () -> T): CompletableFuture<T> {
@@ -108,9 +109,9 @@ fun <T> runAsync(context: CoroutineContext, block: () -> T): CompletableFuture<T
 // ------------------------------------ //
 
 /**
- * runs a function inside the [block] safely
+ * Runs a function inside the [block] safely
  *
- * if any error is thrown, depending on the [printError] it may print it to the console
+ * If any error is thrown, depending on the [printError] it may print it to the console
  * just like any other thrown exceptions
  */
 @JvmSynthetic
@@ -124,9 +125,9 @@ fun <T> safeRun(printError: Boolean = true, block: () -> T): T? {
 }
 
 /**
- * runs an instructions under the [block] safely
+ * Runs an instructions under the [block] safely
  *
- * if any error is thrown, depending on the [printError] it may print it to the console
+ * If any error is thrown, depending on the [printError] it may print it to the console
  * just like any other thrown exceptions
  */
 @JvmOverloads
@@ -164,7 +165,7 @@ fun <T> javaValue(block: () -> T) = JavaValue.valueFromBlock(block)
 // ------------------------------------ //
 
 /**
- * gets a stream of a file from the jar
+ * Gets a stream of a file from the jar
  *
  * @param name the file inside the .jar
  */
@@ -172,7 +173,7 @@ fun Class<*>.getResourceStream(name: String): BufferedInputStream? =
     this.classLoader.getResourceAsStream(name)?.buffered()
 
 /**
- * gets a stream of a file from the jar
+ * Gets a stream of a file from the jar
  *
  * @param name the file inside the .jar
  */
@@ -184,7 +185,7 @@ val Class<*>.currentJarFile
     get() = safeRun(false) { File(this.protectionDomain.codeSource.location.toURI()) }
 
 /**
- * loads a file from the jar to a certain location
+ * Loads a file from the jar to a certain location
  *
  * @param source the file inside the .jar
  * @param destination the file destination
@@ -203,7 +204,7 @@ fun Class<*>.loadFile(source: String, destination: Path, vararg options: CopyOpt
 }
 
 /**
- * loads a file from the jar to a certain location
+ * Loads a file from the jar to a certain location
  *
  * @param source the file inside the .jar
  * @param destination the file destination
@@ -219,12 +220,12 @@ fun Any.loadFile(source: String, destination: Path, vararg options: CopyOption) 
 //                 Thread               //
 // ------------------------------------ //
 
-/** sleeps a thread */
+/** Sleeps a thread */
 @JvmOverloads
 fun sleep(millis: Long, timeUnit: TimeUnit = TimeUnit.MILLISECONDS) =
     Thread.sleep(timeUnit.toMillis(millis))
 
-/** safely sleeps a thread */
+/** Safely sleeps a thread */
 @JvmOverloads
 fun safeSleep(millis: Long, timeUnit: TimeUnit = TimeUnit.MILLISECONDS) =
     sleep(millis, timeUnit)
@@ -234,7 +235,7 @@ fun safeSleep(millis: Long, timeUnit: TimeUnit = TimeUnit.MILLISECONDS) =
 // ------------------------------------ //
 
 /**
- * builds a date from pattern format
+ * Builds a date from pattern format
  *
  * @param millis  the millis
  * @param pattern the pattern
