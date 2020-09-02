@@ -1,7 +1,8 @@
 name: Java-CI
 
 on:
-  push:
+  release:
+    types: [published, created]
     branches: [master]
 
 jobs:
@@ -23,7 +24,7 @@ jobs:
         run: ./gradlew clean build
 
       - name: Stores build results
-        uses: actions/upload-artifcact@v2
+        uses: actions/upload-artifact@v2
         with:
           name: Builds
           path: build/libs
