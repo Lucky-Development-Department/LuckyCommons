@@ -64,7 +64,8 @@ public class Main extends JavaPlugin {
 ```kotlin
 class Main : JavaPlugin() {
 
-    override fun onEnable() { LuckyCommons.loadInjector(this)
+    override fun onEnable() { 
+        LuckyCommons.loadInjector(this)
     }
 
 }
