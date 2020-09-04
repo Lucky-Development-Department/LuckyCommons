@@ -41,7 +41,7 @@ val deployConfig = Properties()
     }
 
 group = "dev.luckynetwork.alviann.commons"
-version = "1.0.8"
+version = "1.0.9"
 
 repositories {
     mavenLocal()

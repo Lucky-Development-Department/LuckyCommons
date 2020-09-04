@@ -3,6 +3,7 @@
 
 package dev.luckynetwork.alviann.commons.internal
 
+import com.google.gson.JsonElement
 import dev.luckynetwork.alviann.commons.closer.Closer
 import dev.luckynetwork.alviann.commons.objects.JavaValue
 import dev.luckynetwork.alviann.commons.objects.SafeFunction
@@ -19,6 +20,10 @@ import java.util.concurrent.CompletableFuture
 import java.util.concurrent.TimeUnit
 import kotlin.collections.ArrayList
 import kotlin.coroutines.CoroutineContext
+
+// ------------------------------------ //
+//                Global                //
+// ------------------------------------ //
 
 /**
  * This works basically the same as the classical [Any.toString] method
@@ -39,6 +44,9 @@ fun Any.stringify(): String {
 
     return "${clazz.simpleName}(${builder.joinToString()})"
 }
+
+/** Transforms an object into a [JsonElement] */
+fun Any.toJson() = parseToJson(defaultGson.toJson(this))
 
 // ------------------------------------ //
 //                String                //
