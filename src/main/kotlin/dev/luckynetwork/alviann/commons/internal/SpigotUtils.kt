@@ -3,6 +3,7 @@
 
 package dev.luckynetwork.alviann.commons.internal
 
+import com.google.gson.JsonArray
 import dev.luckynetwork.alviann.commons.builder.ItemBuilder
 import dev.luckynetwork.alviann.commons.reflection.Reflections
 import net.md_5.bungee.api.ChatColor
@@ -17,6 +18,7 @@ import org.bukkit.event.inventory.InventoryType
 import org.bukkit.inventory.ItemStack
 import org.bukkit.plugin.Plugin
 import org.bukkit.plugin.java.JavaPlugin
+import java.lang.reflect.Constructor
 import kotlin.math.roundToInt
 
 // ------------------------------------ //
@@ -38,6 +40,169 @@ val Player.ping: Int
 
         return ping
     }
+
+/** Sends a packet */
+fun Player.sendPacket(packet: Any) {
+    val handle = this.javaClass.getMethod("getHandle").invoke(this)
+    val playerConnection = handle.javaClass.getField("playerConnection").get(handle)
+
+    playerConnection.javaClass.getMethod("sendPacket", Reflections.SPIGOT.getNMSClass("Packet")).invoke(
+        playerConnection,
+        packet
+    )
+}
+
+/**
+ * sends a title using reflection
+ *
+ * @param text          the text
+ * @param fadeInTime    the time the title takes to fade in
+ * @param showTime      the time the title is shown
+ * @param fadeOutTime   the time the title takes to fade out
+ * @param color         the color of the title
+ */
+@Suppress("DEPRECATION")
+fun Player.sendTitle(text: String, fadeInTime: Int, showTime: Int, fadeOutTime: Int, color: ChatColor) {
+    try {
+        val chatTitle: Any =
+            Reflections.SPIGOT.getNMSClass("IChatBaseComponent").declaredClasses[0]
+                .getMethod("a", String::class.java)
+                .invoke(null, "{\"text\": \"" + text + "\",color:" + color.name.toLowerCase() + "}")
+
+        val titleConstructor: Constructor<*> = Reflections.SPIGOT.getNMSClass("PacketPlayOutTitle").getConstructor(
+            Reflections.SPIGOT.getNMSClass("PacketPlayOutTitle").declaredClasses[0],
+            Reflections.SPIGOT.getNMSClass("IChatBaseComponent"),
+            Int::class.java,
+            Int::class.java,
+            Int::class.java
+        )
+        val packet: Any = titleConstructor.newInstance(
+            Reflections.SPIGOT.getNMSClass("PacketPlayOutTitle").declaredClasses[0].getField("TITLE").get(null),
+            chatTitle,
+            fadeInTime,
+            showTime,
+            fadeOutTime
+        )
+
+        this.sendPacket(packet)
+
+    } catch (e: Exception) {
+        e.printStackTrace()
+    }
+}
+
+/**
+ * sends a title using reflection
+ *
+ * @param jsonArray     the text using minecraft json title thing
+ * @param fadeInTime    the time the title takes to fade in
+ * @param showTime      the time the title is shown
+ * @param fadeOutTime   the time the title takes to fade out
+ */
+fun Player.sendJSONTitle(jsonArray: JsonArray, fadeInTime: Int, showTime: Int, fadeOutTime: Int) {
+    try {
+        val chatTitle: Any =
+            Reflections.SPIGOT.getNMSClass("IChatBaseComponent").declaredClasses[0]
+                .getMethod("a", String::class.java)
+                .invoke(null, jsonArray.toString())
+
+        val titleConstructor: Constructor<*> = Reflections.SPIGOT.getNMSClass("PacketPlayOutTitle").getConstructor(
+            Reflections.SPIGOT.getNMSClass("PacketPlayOutTitle").declaredClasses[0],
+            Reflections.SPIGOT.getNMSClass("IChatBaseComponent"),
+            Int::class.java,
+            Int::class.java,
+            Int::class.java
+        )
+        val packet: Any = titleConstructor.newInstance(
+            Reflections.SPIGOT.getNMSClass("PacketPlayOutTitle").declaredClasses[0].getField("TITLE").get(null),
+            chatTitle,
+            fadeInTime,
+            showTime,
+            fadeOutTime
+        )
+
+        this.sendPacket(packet)
+
+    } catch (e: Exception) {
+        e.printStackTrace()
+    }
+}
+
+/**
+ * sends a sub-title using reflection
+ *
+ * @param text          the text
+ * @param fadeInTime    the time the title takes to fade in
+ * @param showTime      the time the title is shown
+ * @param fadeOutTime   the time the title takes to fade out
+ * @param color         the color of the title
+ */
+@Suppress("DEPRECATION")
+fun Player.sendSubTitle(text: String, fadeInTime: Int, showTime: Int, fadeOutTime: Int, color: ChatColor) {
+    try {
+        val chatTitle: Any =
+            Reflections.SPIGOT.getNMSClass("IChatBaseComponent").declaredClasses[0]
+                .getMethod("a", String::class.java)
+                .invoke(null, "{\"text\": \"" + text + "\",color:" + color.name.toLowerCase() + "}")
+
+        val subTitleConstructor: Constructor<*> = Reflections.SPIGOT.getNMSClass("PacketPlayOutTitle").getConstructor(
+            Reflections.SPIGOT.getNMSClass("PacketPlayOutTitle").declaredClasses[0],
+            Reflections.SPIGOT.getNMSClass("IChatBaseComponent"),
+            Int::class.java,
+            Int::class.java,
+            Int::class.java
+        )
+        val packet: Any = subTitleConstructor.newInstance(
+            Reflections.SPIGOT.getNMSClass("PacketPlayOutTitle").declaredClasses[0].getField("SUBTITLE").get(null),
+            chatTitle,
+            fadeInTime,
+            showTime,
+            fadeOutTime
+        )
+
+        this.sendPacket(packet)
+
+    } catch (e: Exception) {
+        e.printStackTrace()
+    }
+}
+
+/**
+ * sends a sub-title using reflection
+ *
+ * @param jsonArray     the text using minecraft json title thing
+ * @param fadeInTime    the time the title takes to fade in
+ * @param showTime      the time the title is shown
+ * @param fadeOutTime   the time the title takes to fade out
+ */
+fun Player.sendJSONSubTitle(jsonArray: JsonArray, fadeInTime: Int, showTime: Int, fadeOutTime: Int) {
+    try {
+        val chatTitle: Any =
+            Reflections.SPIGOT.getNMSClass("IChatBaseComponent").declaredClasses[0]
+                .getMethod("a", String::class.java)
+                .invoke(null, jsonArray.toString())
+
+        val subTitleConstructor: Constructor<*> = Reflections.SPIGOT.getNMSClass("PacketPlayOutTitle").getConstructor(
+            Reflections.SPIGOT.getNMSClass("PacketPlayOutTitle").declaredClasses[0],
+            Reflections.SPIGOT.getNMSClass("IChatBaseComponent"),
+            Int::class.java,
+            Int::class.java,
+            Int::class.java
+        )
+        val packet: Any = subTitleConstructor.newInstance(
+            Reflections.SPIGOT.getNMSClass("PacketPlayOutTitle").declaredClasses[0].getField("SUBTITLE").get(null),
+            chatTitle,
+            fadeInTime,
+            showTime,
+            fadeOutTime
+        )
+
+        this.sendPacket(packet)
+
+    } catch (e: Exception) {
+        e.printStackTrace()
+    }
+}
 
 /** Respawns the player safely */
 fun Player.safeRespawn(plugin: Plugin) = Bukkit.getScheduler().runTask(plugin) { this.spigot().respawn() }!!
