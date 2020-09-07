@@ -20,7 +20,7 @@ The library needs to be compiled within the project.
     <dependency>
         <groupId>dev.luckynetwork.alviann.commons</groupId>
         <artifactId>LuckyCommons</artifactId>
-        <version>1.0.8</version>
+        <version>VERSION</version>
         <type>compile</type>
     </dependency>
 </dependencies>
@@ -35,7 +35,7 @@ repositories {
 }
 
 dependencies {
-    implementation 'dev.luckynetwork.alviann.commons:LuckyCommons:1.0.8' 
+    implementation 'dev.luckynetwork.alviann.commons:LuckyCommons:VERSION' 
 }
 ```
 
