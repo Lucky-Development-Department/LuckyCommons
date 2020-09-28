@@ -40,20 +40,30 @@ val Player.ping: Int
     }
 
 /**
- * Sends a packet
+ * Sends a packet to player
  */
 fun Player.sendPacket(packet: Any) {
-    val packetClass = Reflections.SPIGOT.getNMSClass("Packet")
-    // should only accepts packet instances
-    if (!packet.javaClass.isAssignableFrom(packetClass))
-        return
-
     val handle = this.javaClass.getMethod("getHandle").invoke(this)
     val playerConnection = handle.javaClass.getField("playerConnection").get(handle)
+    playerConnection.javaClass.getMethod(
+        "sendPacket",
+        Reflections.SPIGOT.getNMSClass("Packet")
+    ).invoke(playerConnection, packet)
+}
 
-    playerConnection.javaClass
-        .getMethod("sendPacket", packetClass)
-        .invoke(playerConnection, packet)
+/**
+ * Sends a title and subtitle using reflection
+ *
+ * @param title     the title text
+ * @param subTitle  the subtitle text
+ * @param fadeIn    the time the title takes to fade in
+ * @param show      the time the title is shown
+ * @param fadeOut   the time the title takes to fade out
+ */
+@Suppress("EXTENSION_SHADOWED_BY_MEMBER")
+fun Player.sendTitle(title: String, subTitle: String, fadeIn: Int, show: Int, fadeOut: Int) {
+    this.sendTitle(title, fadeIn, show, fadeOut)
+    this.sendSubTitle(subTitle, fadeIn, show, fadeOut, title)
 }
 
 /**
@@ -65,62 +75,87 @@ fun Player.sendPacket(packet: Any) {
  * @param fadeOut   the time the title takes to fade out
  */
 fun Player.sendTitle(title: String, fadeIn: Int, show: Int, fadeOut: Int) {
-    val textComponent = Reflections.SPIGOT.getNMSClass("IChatBaseComponent").declaredClasses[0]
+    val titleTextComponent = Reflections.SPIGOT.getNMSClass("IChatBaseComponent").declaredClasses[0]
         .getMethod("a", String::class.java)
-        .invoke(null, "{'text': '${title.colorize()}'}")
+        .invoke(null, "{\"text\":\"${title.colorize()}\"}")
 
-    val packetConstructor = Reflections.SPIGOT.getNMSClass("PacketPlayOutTitle").getConstructor(
+    var component = Reflections.SPIGOT.getNMSClass("PacketPlayOutTitle").declaredClasses[0]
+        .getField("TIMES")
+        .get(null)
+
+    var titleConstructor = Reflections.SPIGOT.getNMSClass("PacketPlayOutTitle").getConstructor(
         Reflections.SPIGOT.getNMSClass("PacketPlayOutTitle").declaredClasses[0],
         Reflections.SPIGOT.getNMSClass("IChatBaseComponent"),
-        Int::class.java,
-        Int::class.java,
-        Int::class.java
+        Integer.TYPE,
+        Integer.TYPE,
+        Integer.TYPE
     )
 
-    val packet = packetConstructor.newInstance(
-        Reflections.SPIGOT.getNMSClass("PacketPlayOutTitle").declaredClasses[0]
-            .getField("TITLE")
-            .get(null),
-        textComponent,
-        fadeIn,
-        show,
-        fadeOut
+    var titlePacket = titleConstructor.newInstance(component, titleTextComponent, fadeIn, show, fadeOut)
+    this.sendPacket(titlePacket)
+
+    component = Reflections.SPIGOT.getNMSClass("PacketPlayOutTitle").declaredClasses[0]
+        .getField("TITLE")
+        .get(null)
+
+    titleConstructor = Reflections.SPIGOT.getNMSClass("PacketPlayOutTitle").getConstructor(
+        Reflections.SPIGOT.getNMSClass("PacketPlayOutTitle").declaredClasses[0],
+        Reflections.SPIGOT.getNMSClass("IChatBaseComponent")
     )
 
-    this.sendPacket(packet)
+    titlePacket = titleConstructor.newInstance(component, titleTextComponent)
+    this.sendPacket(titlePacket)
 }
 
 /**
  * sends a sub-title using reflection
  *
- * @param subTitle          the text
+ * @param subTitle  the text
  * @param fadeIn    the time the title takes to fade in (in seconds)
  * @param show      the time the title is shown (in seconds)
  * @param fadeOut   the time the title takes to fade out (in seconds)
+ * @param _title    the title text(if any)
  */
-fun Player.sendSubTitle(subTitle: String, fadeIn: Int, show: Int, fadeOut: Int) {
-    val textComponent = Reflections.SPIGOT.getNMSClass("IChatBaseComponent").declaredClasses[0]
-        .getMethod("a", String::class.java)
-        .invoke(null, "{'text': '${subTitle.colorize()}'}")
+fun Player.sendSubTitle(subTitle: String, fadeIn: Int, show: Int, fadeOut: Int, _title: String? = null) {
+    val title = _title ?: " "
 
-    val packetConstructor = Reflections.SPIGOT.getNMSClass("PacketPlayOutTitle").getConstructor(
+    val titleComponent = Reflections.SPIGOT.getNMSClass("PacketPlayOutTitle").declaredClasses[0]
+        .getField("TIMES")
+        .get(null)
+
+    val titleTextComponent = Reflections.SPIGOT.getNMSClass("IChatBaseComponent").declaredClasses[0]
+        .getMethod("a", String::class.java)
+        .invoke(null, "{\"text\":\"${title.colorize()}\"}")
+
+    val titleConstructor = Reflections.SPIGOT.getNMSClass("PacketPlayOutTitle").getConstructor(
         Reflections.SPIGOT.getNMSClass("PacketPlayOutTitle").declaredClasses[0],
         Reflections.SPIGOT.getNMSClass("IChatBaseComponent"),
-        Int::class.java,
-        Int::class.java,
-        Int::class.java
+        Integer.TYPE,
+        Integer.TYPE,
+        Integer.TYPE
     )
 
-    val packet = packetConstructor.newInstance(
-        Reflections.SPIGOT.getNMSClass("PacketPlayOutTitle").declaredClasses[0].getField("SUBTITLE")
-            .get(null),
-        textComponent,
-        fadeIn,
-        show,
-        fadeOut
+    val titlePacket = titleConstructor.newInstance(titleComponent, titleTextComponent, fadeIn, show, fadeOut)
+    this.sendPacket(titlePacket)
+
+    val subTitleComponent = Reflections.SPIGOT.getNMSClass("PacketPlayOutTitle").declaredClasses[0]
+        .getField("SUBTITLE")
+        .get(null)
+
+    val subTitleTextComponent = Reflections.SPIGOT.getNMSClass("IChatBaseComponent").declaredClasses[0]
+        .getMethod("a", String::class.java)
+        .invoke(null, "{\"text\":\"${subTitle.colorize()}\"}")
+
+    val subTitleConstructor = Reflections.SPIGOT.getNMSClass("PacketPlayOutTitle").getConstructor(
+        Reflections.SPIGOT.getNMSClass("PacketPlayOutTitle").declaredClasses[0],
+        Reflections.SPIGOT.getNMSClass("IChatBaseComponent"),
+        Integer.TYPE,
+        Integer.TYPE,
+        Integer.TYPE
     )
 
-    this.sendPacket(packet)
+    val subTitlePacket = subTitleConstructor.newInstance(subTitleComponent, subTitleTextComponent, fadeIn, show, fadeOut)
+    this.sendPacket(subTitlePacket)
 }
 
 /** Respawns the player safely */
@@ -170,11 +205,11 @@ fun Player.getNearbyPlayers(x: Double, y: Double, z: Double) =
 fun Player.clearInventory(clearArmor: Boolean = false) {
     this.inventory.clear()
     if (clearArmor)
-        this.inventory.armorContents = emptyArray()
+        this.inventory.armorContents = null
 }
 
 /** Clears the currently active potion effects */
-fun Player.clearPotionEffects() = this.activePotionEffects.clear()
+fun Player.clearPotionEffects() = this.activePotionEffects.forEach { this.removePotionEffect(it.type) }
 
 /**
  * Heals the player (restores the player's health)

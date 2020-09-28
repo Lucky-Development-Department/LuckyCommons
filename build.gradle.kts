@@ -5,7 +5,7 @@ import java.io.IOException
 import java.util.*
 
 plugins {
-    kotlin("jvm") version "1.4.0"
+    kotlin("jvm") version "1.4.10"
 
     `maven-publish`
     java
@@ -41,7 +41,7 @@ val deployConfig = Properties()
     }
 
 group = "dev.luckynetwork.alviann.commons"
-version = "2.0.0"
+version = "2.0.1"
 
 repositories {
     mavenLocal()
@@ -60,7 +60,7 @@ dependencies {
     }
 
     // annotations
-    depend("org.jetbrains:annotations:20.0.0")
+    depend("org.jetbrains:annotations:20.1.0")
     // kotlin libraries
     depend("org.jetbrains.kotlin:kotlin-stdlib")
     depend("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
