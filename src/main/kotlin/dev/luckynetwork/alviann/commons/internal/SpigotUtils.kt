@@ -10,11 +10,13 @@ import org.bukkit.*
 import org.bukkit.attribute.Attribute
 import org.bukkit.command.CommandExecutor
 import org.bukkit.configuration.ConfigurationSection
+import org.bukkit.entity.Entity
 import org.bukkit.entity.Player
 import org.bukkit.event.Listener
 import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.inventory.InventoryType
 import org.bukkit.inventory.ItemStack
+import org.bukkit.metadata.FixedMetadataValue
 import org.bukkit.plugin.Plugin
 import org.bukkit.plugin.java.JavaPlugin
 import kotlin.math.roundToInt
@@ -154,7 +156,8 @@ fun Player.sendSubTitle(subTitle: String, fadeIn: Int, show: Int, fadeOut: Int, 
         Integer.TYPE
     )
 
-    val subTitlePacket = subTitleConstructor.newInstance(subTitleComponent, subTitleTextComponent, fadeIn, show, fadeOut)
+    val subTitlePacket =
+        subTitleConstructor.newInstance(subTitleComponent, subTitleTextComponent, fadeIn, show, fadeOut)
     this.sendPacket(subTitlePacket)
 }
 
@@ -215,11 +218,13 @@ fun Player.clearPotionEffects() = this.activePotionEffects.forEach { this.remove
  * Heals the player (restores the player's health)
  *
  * @param foodLevel do you also want to restores the player's food level?
+ * @param clearEffects do you also want to clear the player's active potion effect?
  */
 @Suppress("DEPRECATION")
 @JvmOverloads
-fun Player.heal(foodLevel: Boolean = false) {
+fun Player.heal(foodLevel: Boolean = false, clearEffects: Boolean = false) {
     this.health = try {
+        Class.forName("org.bukkit.attribute.Attribute")
         this.getAttribute(Attribute.GENERIC_MAX_HEALTH).value
     } catch (_: Exception) {
         this.maxHealth
@@ -227,7 +232,51 @@ fun Player.heal(foodLevel: Boolean = false) {
 
     if (foodLevel)
         this.foodLevel = 20
+    if (clearEffects)
+        this.clearPotionEffects()
 }
+
+// ------------------------------------ //
+//                Entity                //
+// ------------------------------------ //
+
+/** Applies a metadata to [Entity] easily */
+fun Entity.applyMetadata(plugin: Plugin, metadata: String, value: Any = true) =
+    this.setMetadata(metadata, FixedMetadataValue(plugin, value))
+
+/** Removes a metadata to [Entity] easily */
+fun Entity.removeMetadata(plugin: Plugin, metadata: String) =
+    this.removeMetadata(metadata, plugin)
+
+// ------------------------------------ //
+//             ItemStack                //
+// ------------------------------------ //
+
+/** Checks if [ItemStack] is identical without considering the durability */
+fun ItemStack.isIdentical(itemStack: ItemStack, checkEnchants: Boolean = false): Boolean {
+    if (this == itemStack)
+        return true
+
+    return this.type == itemStack.type && this.hasItemMeta() == itemStack.hasItemMeta() &&
+            (if (hasItemMeta()) Bukkit.getItemFactory().equals(this.itemMeta, itemStack.itemMeta) else true) &&
+            (if (checkEnchants && this.enchantments.isNotEmpty()) this.enchantments == itemStack.enchantments else true)
+}
+
+/** Checks if [ItemStack] is a block */
+val ItemStack.isBlock
+    get() = this.type.isBlock
+
+/** Checks if [ItemStack] is an item */
+val ItemStack.isItem
+    get() = this.type.isItem
+
+/** Checks if [ItemStack] is edible */
+val ItemStack.isEdible
+    get() = this.type.isEdible
+
+/** Checks if [ItemStack] is affected by gravity */
+val ItemStack.hasGravity
+    get() = this.type.hasGravity()
 
 // ------------------------------------ //
 //                Server                //

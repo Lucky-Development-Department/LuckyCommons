@@ -11,6 +11,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async
 import java.io.BufferedInputStream
 import java.io.File
+import java.math.RoundingMode
 import java.nio.file.CopyOption
 import java.nio.file.Files
 import java.nio.file.Path
@@ -68,6 +69,41 @@ val String.isInt
 /** Determines if a string is a valid minecraft username */
 val String.isMinecraftUsername
     get() = this.matches(Regex("^[a-zA-Z_0-9]{3,16}\$"))
+
+// ------------------------------------ //
+//                Double                //
+// ------------------------------------ //
+
+/** rounds up the decimal places in [Double] */
+fun Double.round(roundingMode: RoundingMode, decimal: Int) =
+    this.toBigDecimal().setScale(decimal, roundingMode).toDouble()
+
+/** rounds up the decimal places in [Double] to 1 decimal places */
+val Double.roundUp
+    get() = this.round(RoundingMode.UP, 1)
+
+/** rounds up the decimal places in [Double] to 1 decimal places */
+val Double.roundDown
+    get() = this.round(RoundingMode.DOWN, 1)
+
+// ------------------------------------ //
+//                 Long                 //
+// ------------------------------------ //
+
+/** formats [Long] to the days:hours:minutes:seconds format */
+fun Long.formatTime(): String {
+    val seconds = this % 60
+    val minutes = this % 3600 / 60
+    val hours = this % 86400 / 3600
+    val days = this / 86400
+
+    return when {
+        days > 0 -> "$days:$hours:$minutes:$seconds"
+        hours > 0 -> "$hours:$minutes:$seconds"
+        seconds > 0 -> "$minutes:$seconds"
+        else -> "$seconds"
+    }
+}
 
 // ------------------------------------ //
 //           Global Collections         //

@@ -4,12 +4,14 @@ import dev.luckynetwork.alviann.commons.internal.colorize
 import dev.luckynetwork.alviann.commons.internal.safeRun
 import org.bukkit.Bukkit
 import org.bukkit.Color
+import org.bukkit.DyeColor
 import org.bukkit.Material
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.inventory.ItemFlag
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.LeatherArmorMeta
 import org.bukkit.inventory.meta.SkullMeta
+import org.bukkit.material.Wool
 
 /**
  * Easily create item stacks, without messing your hands.
@@ -201,6 +203,27 @@ class ItemBuilder : Cloneable {
         }
 
         return this
+    }
+
+    /**
+     * sets the wool color
+     */
+    fun woolColor(dyeColor: DyeColor): ItemBuilder {
+        if (item.type != Material.WOOL)
+            return this
+
+        return ItemBuilder(Wool(dyeColor).toItemStack(item.amount))
+    }
+
+    /**
+     * sets the glass color
+     */
+    @Suppress("DEPRECATION")
+    fun glassColor(dyeColor: DyeColor): ItemBuilder {
+        if (!item.type.name.contains("GLASS"))
+            return this
+
+        return ItemBuilder(item.type, item.amount, dyeColor.woolData.toShort())
     }
 
     /** creates the itemstack */
